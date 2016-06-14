@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_histogram.R
 \name{compute_histogram}
 \alias{compute_histogram}
-\title{Compare correlation density with negative control.}
+\title{Compute a quality metric.}
 \usage{
 compute_histogram(density_data)
 }

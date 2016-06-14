@@ -1,3 +1,90 @@
+#' Run the method.
+#' 
+#' The \code{all_calls} function calls all the functions that form the package
+#' pipeline, according to the provided parameters.
+#' 
+#' Arguments for this function are passed on to the each one of the functions in 
+#' the package as indicated in this page, as they are called inside the function 
+#' body.
+#' 
+#' \code{randomizations} is passed as an argument of the \code{\link{randomize_top}} 
+#' function. Even though more random windows than specified by default (25) can be 
+#' generated, it should be noted that bigger numbers may not make random negative
+#' control any more informative.
+#' 
+#' \code{max_zeros} is passed as an argument of the \code{\link{calculate_cvs}} 
+#' function. For details on values and meaning, see this object's documentation.
+#' 
+#' \code{histogram_threshold} is passed as an argument of the \code{\link{filter_data}}
+#' function.
+#' 
+#' \code{all_calls} also includes code use to plot graphs for the analysis. These
+#' will be saved in R's working directory, unless otherwise specified. Also, if the 
+#' indicated directory does not exist in the current working directory, it will be 
+#' created inside it. When unspecified, the function will not save the plots, but 
+#' only display them.
+#' 
+#' Plot aesthetics arguments are used as arguments of the \code{\link[ggplot2]{geom_point}} 
+#' function, in the \code{ggplot2} package.
+#' 
+#' When run, \code{all_calls} also displays useful messages that help the user
+#' track analysis progression, as well as information on the operations performed 
+#' (i.e. number or size of bins generated, lowest mean expression value included
+#' in top window, etc.). If the retrieved values do not match what is expected, the
+#' pipeline can be stopped at any point and restarted from the beginning.
+#' 
+#' By default, the analysis is run creating the \strong{top window} by size, selecting
+#' 100 genes, and the \strong{binning} of the rest of the genes is done creating
+#' a specific number of windows (30 by default). For details on these methods and
+#' the parameters, see \code{\link{extract_top_genes}} and \code{\link{bin_scdata}}.
+#' 
+#' \strong{Important note}: This function is used to run the analysis implemented 
+#' in this package. Unless highly familiar with the method, it is not advised to 
+#' run the different functions individually.
+#' 
+#' @param file A file or path containing the expression value table.
+#' 
+#' @param max_zeros A number of type double. Indicates the maximum proportion
+#' of zeros allowed per row in the raw data.
+#' 
+#' @param randomizations An integer. Number of times the top window will be 
+#' randomized to generate a random negative control.
+#' 
+#' @param top_method A string. Indicates the method for top window selection.
+#' 
+#' @param filter_parameter An integer. Specifies a parameter for the top window 
+#' selection method.
+#' 
+#' @param bin_method A string. Indicates the method for binning of the genes.
+#' 
+#' @param bin_parameter An integer. Specifies the parameter for the selected 
+#' binning method.
+#' 
+#' @param scatter_plot,bins_plot,correlation_plots,histogram_plot Logicals. 
+#' When \code{TRUE}, plots will be generated through the analysis.
+#' 
+#' @param save Logical. When \code{TRUE}, generated plots will be saved.
+#' 
+#' @param display Logical. When \code{TRUE}, generated plots will also be displayed.
+#' 
+#' @param plot_path A string. Supplies a path to save plots to.
+#' 
+#' @param format A string. Indicates the file format of plot files.
+#' 
+#' @param scatter_parameters,bins_parameters Numeric vector providing aesthetic
+#' parameters for scatter plots: [1] dot shape, [2] dot size, [3] alpha.
+#' 
+#' @param density Logical. Indicates whether scatter density should be shown
+#' in the scatter plot.
+#' 
+#' @param cor_method A string. Indicates the correlation method to use.
+#' 
+#' @param histogram_threshold A number of type double. Provides threshold for
+#' final data filtering. 
+#' 
+#' @return A data frame containing expression values for genes remaining after
+#' filtering, output by the \code{\link{filter_data}} function.
+
 all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
                       # top window parameters
                       top_method = "window_size", filter_parameter = 100,

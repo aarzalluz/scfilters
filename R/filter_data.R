@@ -3,7 +3,7 @@
 #' Filters out of the binned data matrix those windows that have a quality metric value
 #' beneath a set threshold.
 #'
-#' \filter_data compares the quality metric in every window with the threshold value, and
+#' \code{filter_data} compares the quality metric in every window with the threshold value, and
 #' finds out which windows are above threshold. Then, it subsets the binned data, keeping
 #' only the selected windows.
 #'
@@ -18,7 +18,7 @@
 #' @param threshold A number of type double indicating the quality metric value used to
 #' filter the data.
 #'
-#' @return A data frame, containing only genes from windows above set quality.
+#' @return A data frame, containing only genes from windows above set minimum quality.
 
 filter_data <- function(binned_data, histogram, threshold){
 
