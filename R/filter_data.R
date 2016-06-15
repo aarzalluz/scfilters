@@ -42,7 +42,7 @@ filter_data <- function(binned_data, histogram, threshold){
     i_list <- vector()
 
     # store index of the rows that contain genes from the selected windows
-    for (i in seq_len(nrow(all_data))){
+    for (i in seq_len(nrow(binned_data))){
 
         if (all_data[i,]$bin %in% windows_above){
             i_list <- c(i_list, i)
@@ -50,7 +50,7 @@ filter_data <- function(binned_data, histogram, threshold){
     }
 
     # use stored row numbers to retrieve genes and store them in a data frame
-    filtered_data <- data.frame(select(all_data[i_list,], -mean, -CV, -stdev, -bin))
+    filtered_data <- data.frame(select(binned_data[i_list,], -mean, -CV, -stdev, -bin))
 
     # tear the first part of the rowname string to leave only ENSEMBL ID
     rownames <- rownames(filtered_data)
