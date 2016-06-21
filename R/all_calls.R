@@ -241,23 +241,23 @@ all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
                 ylab("Density") + xlab("Absolute value of correlation") +
                 theme_bw() + scale_color_manual(values = c("black","red"),
                                                 labels = c("Control", window_label))
-        }
 
-        # displaying condition
-        if (display == TRUE){
-            plot(pl)
-        }
+             # displaying condition
+            if (display == TRUE){
+                plot(pl)
+            }
 
-        # saving condition
-        if (save == TRUE){
+            # saving condition
+            if (save == TRUE){
 
-            ggsave(paste("Random negative control - WIndow", i, ".", format, sep = ""),
-               path = plot_path)
-            message(paste("Correlation plot", i, "saved in selected directory."))
-        }
+                ggsave(paste("Random negative control - WIndow", i, ".", format, sep = ""),
+                    path = plot_path)
+                message(paste("Correlation plot", i, "saved in selected directory."))
+            }
 
-        if (display == TRUE){
-            message("See correlation plots displayed.")
+            if (display == TRUE){
+                message("See correlation plots displayed.")
+            }
         }
     }
 
@@ -267,11 +267,17 @@ all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
 
     # plot the histogram
     if (histogram_plot == TRUE){
-
+        
+        # generate plot title
+        hist_title <- paste("Top window =", top_method, filter_parameter, 
+              "; Bins =", bin_method, bin_parameter,
+              "; Cells =", ncol(raw_data))
+        
         pl <- ggplot(all_hist_values, aes(x = factor(as.numeric(rownames(all_hist_values))),
-                                    y = hist_value, fill = ""))+
-            geom_bar(position = position_dodge(), stat="identity") +
+                                          y = hist_value, fill = "")) +
+            geom_bar(position = position_dodge(), stat="identity") + 
             ylab("Proportion of correlated genes") + xlab("Window number") +
+            ggtitle(hist_title) + ylim(0, 0.8) +
             geom_errorbar(aes(ymax = error_up, ymin = error_down), width = 0.2)
 
         # display condition
