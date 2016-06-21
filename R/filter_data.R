@@ -44,7 +44,7 @@ filter_data <- function(binned_data, histogram, threshold){
     # store index of the rows that contain genes from the selected windows
     for (i in seq_len(nrow(binned_data))){
 
-        if (all_data[i,]$bin %in% windows_above){
+        if (binned_data[i,]$bin %in% windows_above){
             i_list <- c(i_list, i)
         }
     }
