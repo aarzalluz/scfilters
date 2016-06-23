@@ -46,12 +46,12 @@ When \code{TRUE}, plots will be generated through the analysis.}
 \item{scatter_parameters, bins_parameters}{Numeric vector providing aesthetic
 parameters for scatter plots: [1] dot shape, [2] dot size, [3] alpha.}
 
-\item{density}{Logical, indicating whether scatter density should be shown
+\item{density}{Logical. Indicates whether scatter density should be shown
 in the scatter plot.}
 
-\item{cor_method}{A string, indicating the correlation method to use.}
+\item{cor_method}{A string. Indicates the correlation method to use.}
 
-\item{histogram_threshold}{A number of type double, providing threshold for
+\item{histogram_threshold}{A number of type double. Provides threshold for
 final data filtering.}
 }
 \value{

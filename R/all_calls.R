@@ -224,7 +224,7 @@ all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
         dens <- compute_density(all_controls[[i]], cor_data, i)
 
         # calculate the histogram values for each window
-        histogram[[i]] <- compute_histogram(dens)
+        histogram[[i]] <- compute_histogram(all_controls[[i]], cor_data, i)
 
         # plotting condition
         if (correlation_plots == TRUE){
@@ -263,22 +263,24 @@ all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
 
     # bind all histogram values
     all_hist_values <- data.frame(do.call(rbind, histogram))
+    colnames(all_hist_values) <- "hist_value"
     message("Histogram values computed successfully!")
 
     # plot the histogram
     if (histogram_plot == TRUE){
         
         # generate plot title
-        hist_title <- paste("Top window =", top_method, filter_parameter, 
-              "; Bins =", bin_method, bin_parameter,
-              "; Cells =", ncol(raw_data))
+        hist_title <- paste("Top window:", top_method, "=", filter_parameter,
+              ", size:", nrow(divided_data$topgenes),
+              "| Bins:", max(all_data$bin), ",",
+              nrow(subset(all_data, bin == 2)), "genes/bin",
+              "| Cells:", ncol(raw_data))
         
         pl <- ggplot(all_hist_values, aes(x = factor(as.numeric(rownames(all_hist_values))),
                                           y = hist_value, fill = "")) +
             geom_bar(position = position_dodge(), stat="identity") + 
-            ylab("Proportion of correlated genes") + xlab("Window number") +
-            ggtitle(hist_title) + ylim(0, 0.8) +
-            geom_errorbar(aes(ymax = error_up, ymin = error_down), width = 0.2)
+            ylab("Difference between control and data correlation medians") + 
+            xlab("Window number") + ggtitle(hist_title)
 
         # display condition
         if (display == TRUE){

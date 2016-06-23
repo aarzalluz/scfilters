@@ -47,7 +47,7 @@ Column names of the returned data frame and their meaning:
 
 \itemize{
 
-\item \code{control_x}: x values of the density object, took from density of one
+\item \code{control_x}: x values of the density object, taken from density of one
      the random window's correlations.
 
 \item \code{control_y}: mean y values of density for all random correlations.

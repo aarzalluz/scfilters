@@ -1,74 +1,55 @@
 #' Compute a quality metric.
 #'
-#' Computes a statistical metric to assess differences between data distribution
-#' of correlation density and negative control.
+#' Computes a statistical metric to assess differences between the distribution
+#' of correlation density in the data and the negative control.
 #'
-#' The aim of this function is to compute the ratio of correlation density that is non-
-#' coincident with the density distribution of the negative control. Both distributions are
-#' tested to find the section where data density distribution is greater than the control's,
-#' and the differences between both are computed. This metric is divided by the total data
-#' density of correlation.
-#'
-#' Graphically, this is the computation of the area where the correlation density distribution
-#' of the data does not overlap with that of the negative control, divided by the total area
-#' under the data correlation density curve. The aim is to determine which windows present
+#' The aim of this function is to compare the median correlation value for both the
+#' mean control curve (see \code{\link{compute_control}}) and the data correlations
+#' (see \code{\link{correlate}}), for a given window, and compute the difference. 
+#' 
+#' This metric reflects the differences between the two distributions, and assesses
+#' the quality of the data in that window. The aim is to determine which windows present
 #' a significant similarity to a random distribution, and therefore are highly affected by
 #' systematic noise, in order to discard them.
 #'
-#' The metric is computed by the mean control curve, as well as for the maximum and minimum
-#' curves, obtaining the error values. The returned data frame containis the following three
-#' columns:
-#'
-#' \itemize{
-#'      \item \code{hist_value}: the result of computing the metric for the mean control
-#'      curve.
-#'
-#'      \item \code{error_up}: the value of the metric for the maximum control curve.
-#'
-#'      \item \code{error_down}: the value of the metric for the minimum control curve.
-#'  }
-#'
 #' \strong{Important note:} the \code{compute_histogram} function was designed to operate
-#' on the output of the \code{compute_density} function.
+#' on the output of the \code{\link{compute_control}} and \code{\link{correlate}}
+#' functions.
 #'
-#' @param density_data A data frame containing the density data.
+#' @param control A data frame containing a subset of random control correlation
+#' vectors, computed for a given window.
+#' 
+#' @param correlations A a list containing correlations of each window against 
+#' the top window.
+#' 
+#' @param window_number An integer indicating the number of the window for which
+#' the histogram metric is tobe computed.
 #'
-#' @return A data frame containing the value of the metric for each window, and values for
-#' error bars to plot them as a histogram.
+#' @return A number of type double, namely the difference between the median 
+#' correlation values of the control and the window data.
 
-compute_histogram <- function(density_data){
+compute_histogram <- function(control, correlations, window_number){
 
-    # create empty vectors to store calculations
-    data_y <- vector()
-    mean_y <- vector()
-    min_y <- vector()
-    max_y <- vector()
-
-    # extract the section of the plot where curves are non-overlapping, only in the right side
-    for (i in seq_len(nrow(density_data))){
-
-        if ((density_data$data_y[i] > density_data$control_y[i])){
-
-            data_y <- density_data$data_y[i:nrow(density_data)]
-            mean_y <- density_data$control_y[i:nrow(density_data)]
-            min_y <- density_data$max_control_y[i:nrow(density_data)]
-            max_y <- density_data$min_control_y[i:nrow(density_data)]
-
-            break()
-        }
+    # compute absolute correlations of control
+    abs_control <- list()
+    
+    for (i in seq(length(control))){
+       abs_control[[i]] <- abs(control[[i]])
     }
+    
+    # calculate mean absolute correlations of all control windows
+    all_abs_control <- do.call(rbind, abs_control) %>% as.data.frame()
+    mean_control <- colMeans(all_abs_control)
+    
+    # calculate absolute correlations for selected window number
+    abs_window <- abs(correlations[[window_number]])
+    
+    # compute median of control and windows
+    control_median <- median(mean_control)
+    window_median <- median(abs_window)
 
-    mean_correlated_area <- sum(data_y - mean_y) # mean non-overlapping area
-    min_correlated_area <- sum(data_y - min_y) # min non-overlapping area
-    max_correlated_area <- sum(data_y - max_y) # max non-overlapping area
-    window_area <- sum(density_data$data_y) # total area under the window curve
+    # compute difference
+    hist_value <- window_median - control_median
 
-    #           4. Calculate ratio:
-    hist_value <- mean_correlated_area / window_area
-    error_down <- max_correlated_area / window_area
-    error_up <- min_correlated_area / window_area
-
-    #           5. Bind results:
-    histogram <- data.frame(cbind(hist_value, error_up, error_down))
-    return(histogram)
+    return(hist_value)
 }
