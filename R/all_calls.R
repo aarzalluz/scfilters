@@ -269,9 +269,11 @@ all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
     if (histogram_plot == TRUE){
         
         # generate plot title
-        hist_title <- paste("Top window =", top_method, filter_parameter, 
-              "; Bins =", bin_method, bin_parameter,
-              "; Cells =", ncol(raw_data))
+        hist_title <- paste("Top window:", top_method, "=", filter_parameter,
+              ", size:", nrow(divided_data$topgenes),
+              "| Bins:", max(all_data$bin), ",",
+              nrow(subset(all_data, bin == 2)), "genes/bin",
+              "| Cells:", ncol(raw_data))
         
         pl <- ggplot(all_hist_values, aes(x = factor(as.numeric(rownames(all_hist_values))),
                                           y = hist_value, fill = "")) +
