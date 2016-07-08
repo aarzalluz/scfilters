@@ -8,9 +8,8 @@ all_calls(file, max_zeros = 0.5, randomizations = 25,
   top_method = "window_size", filter_parameter = 100,
   bin_method = "window_number", bin_parameter = 30, save = FALSE,
   plot_path = NULL, format = "png", display = TRUE, scatter_plot = TRUE,
-  scatter_parameters = c(16, 0.5, 0.5), density = FALSE, bins_plot = TRUE,
-  bins_parameters = c(16, 0.5, 0.5), correlation_plots = TRUE,
-  cor_method = "pearson", histogram_plot = TRUE,
+  density = FALSE, bins_plot = TRUE, correlation_plots = TRUE,
+  histogram_plot = TRUE, cor_method = "pearson",
   histogram_threshold = 0.1)
 }
 \arguments{
@@ -38,13 +37,11 @@ binning method.}
 
 \item{format}{A string. Indicates the file format of plot files.}
 
-\item{display}{Logical. When \code{TRUE}, generated plots will also be displayed.}
+\item{display}{Logical. When \code{TRUE}, generated plots will be simultaneously 
+displayed during the analysis.}
 
 \item{scatter_plot, bins_plot, correlation_plots, histogram_plot}{Logicals. 
 When \code{TRUE}, plots will be generated through the analysis.}
-
-\item{scatter_parameters, bins_parameters}{Numeric vector providing aesthetic
-parameters for scatter plots: [1] dot shape, [2] dot size, [3] alpha.}
 
 \item{density}{Logical. Indicates whether scatter density should be shown
 in the scatter plot.}
@@ -78,15 +75,11 @@ function. For details on values and meaning, see this object's documentation.
 \code{histogram_threshold} is passed as an argument of the \code{\link{filter_data}}
 function.
 
-\code{all_calls} also includes code use to plot graphs for the analysis. These
-will be saved in R's working directory, unless otherwise specified. Also, if the 
-indicated directory does not exist in the current working directory, it will be 
-created inside it. When unspecified, the function will not save the plots, but 
-only display them.
-
-Plot aesthetics arguments are used as arguments of the \code{\link[ggplot2]{geom_point}} 
-function, in the \code{ggplot2} package.
-
+\code{all_calls} also includes calls to plotting functions. Plots will be saved in 
+R's working directory, unless otherwise specified. Also, if the indicated directory 
+does not exist in the current working directory, it will be created inside it. 
+When unspecified, the function will not save the plots, but only display them.
+ 
 When run, \code{all_calls} also displays useful messages that help the user
 track analysis progression, as well as information on the operations performed 
 (i.e. number or size of bins generated, lowest mean expression value included

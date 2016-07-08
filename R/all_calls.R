@@ -18,15 +18,11 @@
 #' \code{histogram_threshold} is passed as an argument of the \code{\link{filter_data}}
 #' function.
 #' 
-#' \code{all_calls} also includes code use to plot graphs for the analysis. These
-#' will be saved in R's working directory, unless otherwise specified. Also, if the 
-#' indicated directory does not exist in the current working directory, it will be 
-#' created inside it. When unspecified, the function will not save the plots, but 
-#' only display them.
-#' 
-#' Plot aesthetics arguments are used as arguments of the \code{\link[ggplot2]{geom_point}} 
-#' function, in the \code{ggplot2} package.
-#' 
+#' \code{all_calls} also includes calls to plotting functions. Plots will be saved in 
+#' R's working directory, unless otherwise specified. Also, if the indicated directory 
+#' does not exist in the current working directory, it will be created inside it. 
+#' When unspecified, the function will not save the plots, but only display them.
+#'  
 #' When run, \code{all_calls} also displays useful messages that help the user
 #' track analysis progression, as well as information on the operations performed 
 #' (i.e. number or size of bins generated, lowest mean expression value included
@@ -60,19 +56,17 @@
 #' @param bin_parameter An integer. Specifies the parameter for the selected 
 #' binning method.
 #' 
-#' @param scatter_plot,bins_plot,correlation_plots,histogram_plot Logicals. 
-#' When \code{TRUE}, plots will be generated through the analysis.
-#' 
 #' @param save Logical. When \code{TRUE}, generated plots will be saved.
-#' 
-#' @param display Logical. When \code{TRUE}, generated plots will also be displayed.
 #' 
 #' @param plot_path A string. Supplies a path to save plots to.
 #' 
 #' @param format A string. Indicates the file format of plot files.
 #' 
-#' @param scatter_parameters,bins_parameters Numeric vector providing aesthetic
-#' parameters for scatter plots: [1] dot shape, [2] dot size, [3] alpha.
+#' @param display Logical. When \code{TRUE}, generated plots will be simultaneously 
+#' displayed during the analysis.
+#' 
+#' @param scatter_plot,bins_plot,correlation_plots,histogram_plot Logicals. 
+#' When \code{TRUE}, plots will be generated through the analysis.
 #' 
 #' @param density Logical. Indicates whether scatter density should be shown
 #' in the scatter plot.
@@ -90,15 +84,13 @@ all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
                       top_method = "window_size", filter_parameter = 100,
                       # binning paramaters
                       bin_method = "window_number", bin_parameter = 30,
-                      save = FALSE, plot_path = NULL, format = "png", display = TRUE,
-                      # scatter parameters
-                      scatter_plot = TRUE, scatter_parameters = c(16, 0.5, 0.5),
-                      density = FALSE,
-                      # bins plot parameters
-                      bins_plot = TRUE, bins_parameters = c(16, 0.5, 0.5),
-                      # correlation plots and histogram
-                      correlation_plots = TRUE, cor_method = "pearson",
-                      histogram_plot = TRUE, histogram_threshold = 0.1){
+                      # save options
+                      save = FALSE, plot_path = NULL, format = "png", 
+                      # plot options
+                      display = TRUE, scatter_plot = TRUE, density = FALSE, 
+                      bins_plot = TRUE, correlation_plots = TRUE, histogram_plot = TRUE,
+                      # correlation method and filtering
+                      cor_method = "pearson", histogram_threshold = 0.1){
     t0 <- Sys.time()
 
     # make sure that plot_path is not null before its value is tested
@@ -124,23 +116,13 @@ all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
 
     # calculate CVs and report results of the zero value filtering
     message("Calculating CVs... Performing zero value filtering on raw data...")
-    CV <- calculate_cvs(raw_data, max_zeros)
-    message(paste("Genes remaining after zero value filtering:", nrow(CV)))
+    CV_data <- calculate_cvs(raw_data, max_zeros)
+    message(paste("Genes remaining after zero value filtering:", nrow(CV_data)))
 
     # scatter plot
     if (scatter_plot == TRUE){
 
-        pl <- ggplot(CV, aes(x = CV, y = mean + 1)) +
-            # point shape and characteristics
-            geom_point(shape = scatter_parameters[1], size = scatter_parameters[2],
-                       alpha = scatter_parameters[3]) +
-            # set log10 scale in the y axis
-            scale_y_log10() +
-            ylab("Mean expression + 1") + xlab("Coefficient of variation")
-
-        if(density == TRUE){
-            pl <- pl + geom_density_2d()
-        }
+        pl <- plot_scatter(data = CV_data, density)
 
         # displaying condition
         if (display == TRUE){
@@ -158,7 +140,7 @@ all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
     }
 
     # extract top genes using selected method and parameter
-    divided_data <- extract_top_genes(CV, method = top_method,
+    divided_data <- extract_top_genes(CV_data, method = top_method,
                                           parameter = filter_parameter)
 
     # bin rest of data using selected method and parameter
@@ -168,11 +150,7 @@ all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
     # bins plot
     if (bins_plot == TRUE){
 
-        # plot data assigning colors by window
-        pl <- ggplot(all_data, aes(x = CV, y = mean + 1, colour = factor(all_data$bin+1))) +
-            geom_point(shape = bins_parameters[1], alpha = bins_parameters[2], size = bins_parameters[3]) +
-            scale_y_log10() +
-            ylab("Mean expression") + xlab("Coefficient of variation")
+        pl <- plot_bins(data = all_data)
 
         # displaying condition
         if (display == TRUE){
@@ -229,18 +207,8 @@ all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
         # plotting condition
         if (correlation_plots == TRUE){
 
-            # create label for each window
-            window_label <- paste("Window", i)
-
             # plot the data
-            pl <- ggplot() +
-                geom_ribbon(aes(x = dens$control_x, ymin = dens$min_control_y,
-                                ymax = dens$max_control_y), color = "grey", alpha = 0.2) +
-                geom_line(data = dens, aes(x = control_x, y = control_y, color = "Control")) +
-                geom_line(data = dens, aes(x = data_x, y = data_y, color = window_label)) +
-                ylab("Density") + xlab("Absolute value of correlation") +
-                theme_bw() + scale_color_manual(values = c("black","red"),
-                                                labels = c("Control", window_label))
+            pl <- plot_cor_dens(data = dens, i)
 
              # displaying condition
             if (display == TRUE){
@@ -256,7 +224,7 @@ all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
             }
 
             if (display == TRUE){
-                message("See correlation plots displayed.")
+                message("See correlation plot displayed.")
             }
         }
     }
@@ -275,12 +243,7 @@ all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
               nrow(subset(all_data, bin == 2)), "genes/bin",
               "| Cells:", ncol(raw_data))
         
-        pl <- ggplot(all_hist_values, aes(x = factor(as.numeric(rownames(all_hist_values))),
-                                          y = hist_value, fill = "")) +
-            geom_bar(position = position_dodge(), stat="identity") + 
-            ylab("Proportion of correlated genes") + xlab("Window number") +
-            ggtitle(hist_title) + ylim(0, 0.8) +
-            geom_errorbar(aes(ymax = error_up, ymin = error_down), width = 0.2)
+        pl <- plot_histogram(data = all_hist_values, title = hist_title)
 
         # display condition
         if (display == TRUE){
