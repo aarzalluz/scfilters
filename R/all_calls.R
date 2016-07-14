@@ -14,14 +14,6 @@
 #' 
 #' \code{max_zeros} is passed as an argument of the \code{\link{calculate_cvs}} 
 #' function. For details on values and meaning, see this object's documentation.
-#' 
-#' \code{histogram_threshold} is passed as an argument of the \code{\link{filter_data}}
-#' function.
-#' 
-#' \code{all_calls} also includes calls to plotting functions. Plots will be saved in 
-#' R's working directory, unless otherwise specified. Also, if the indicated directory 
-#' does not exist in the current working directory, it will be created inside it. 
-#' When unspecified, the function will not save the plots, but only display them.
 #'  
 #' When run, \code{all_calls} also displays useful messages that help the user
 #' track analysis progression, as well as information on the operations performed 
@@ -40,8 +32,8 @@
 #' 
 #' @param data A file name, path or data frame containing the expression value table.
 #' 
-#' @param file A logical. Indicates whether the name provided in \code{data}
-#' is a file or path (\code{TRUE}) or a data frame already containing the raw data 
+#' @param imort A logical. Indicates whether raw data should be imported \code{data}
+#' from a file or path (\code{TRUE}) or is in a frame already loaded into R 
 #' (\code{FALSE}).
 #' 
 #' @param max_zeros A number of type double. Indicates the maximum proportion
@@ -60,61 +52,59 @@
 #' @param bin_parameter An integer. Specifies the parameter for the selected 
 #' binning method.
 #' 
-#' @param save Logical. When \code{TRUE}, generated plots will be saved.
-#' 
-#' @param plot_path A string. Supplies a path to save plots to.
-#' 
-#' @param format A string. Indicates the file format of plot files.
-#' 
-#' @param display Logical. When \code{TRUE}, generated plots will be simultaneously 
-#' displayed during the analysis.
-#' 
-#' @param scatter_plot,bins_plot,correlation_plots,histogram_plot Logicals. 
-#' When \code{TRUE}, plots will be generated through the analysis.
-#' 
-#' @param density Logical. Indicates whether scatter density should be shown
-#' in the scatter plot.
-#' 
 #' @param cor_method A string. Indicates the correlation method to use.
 #' 
-#' @param histogram_threshold A number of type double. Provides threshold for
-#' final data filtering. 
+#' @return A list containing all the results generated during the analysis. Each
+#' element on the list contains the results of a function call, and is named as follows:
 #' 
-#' @return A data frame containing expression values for genes remaining after
-#' filtering, output by the \code{\link{filter_data}} function.
+#' \itemize{
+#' 
+#'      \item \code{raw} contains the raw data table as it was imported.
+#'      
+#'      \item \code{cv} contains the data frame output by \code{calculate_cvs}, which
+#'      includes all the data plus the mean, cv and standard deviation columns.
+#'      
+#'      \item \code{binned} contains all the data as output by the combined call of
+#'      \code{extract_top_genes} and \code{bin_scdata}, which includes the bin number
+#'      column in the data frame.
+#'      
+#'      \item \code{window_correlations} contains the output of \code{correlate}, which
+#'      outputs a list containing the vector of correlation coefficients of each window 
+#'      to the top window as a separate element.
+#'      
+#'      \item \code{controls} contains a nested list with the controls -as many as 
+#'      randomizations- computed for each window, as output by calling \code{randomize_top} and 
+#'      \code{compute_control} once per window.
+#'      
+#'      \item \code{densities} contains a list where the outputs of \code{compute_density}
+#'      for each window are stored as a separate element.
+#'      
+#'      \item \code{histogram} contains a data frame with all the histogram values.
+#'      
+#'      \item \code{info} contains a string in which all the necessary information about
+#'      the analysis is included. This should be used as the histogram title.
+#' }
+#' 
+#' \strong{Note:} use these names to retrieve information by subsetting using \code{$}.
 
-all_calls <- function(data, file = TRUE, max_zeros = 0.5, randomizations = 25,
+all_calls <- function(data, import = TRUE, max_zeros = 0.5, randomizations = 25,
                       # top window parameters
                       top_method = "window_size", filter_parameter = 100,
                       # binning paramaters
                       bin_method = "window_number", bin_parameter = 30,
-                      # save options
-                      save = FALSE, plot_path = NULL, format = "png", 
-                      # plot options
-                      display = TRUE, scatter_plot = TRUE, density = FALSE, 
-                      bins_plot = TRUE, correlation_plots = TRUE, histogram_plot = TRUE,
-                      # correlation method and filtering
-                      cor_method = "pearson", histogram_threshold = 0.1){
+                      # correlation method
+                      cor_method = "pearson"){
     
+    # start counting computing time
     t0 <- Sys.time()
 
-    # make sure that plot_path is not null before its value is tested
-    if (is.null(plot_path)){
-
-        plot_path <- getwd()
-
-    # if a directory was specified and it doesn't exist, create it
-    } else if (!(plot_path %in% list.files())){
-
-            dir.create(plot_path)
-    }
-
     # load data
-    if (file == TRUE){
+    if (import == TRUE){
         # from a file
-        raw_data <- read_tsv(file)
+        raw_data <- read_tsv(data)
         
-    } else if (file == FALSE){
+    }
+    if (import == FALSE){
         # from an existent data frame
         raw_data <- data
     }
@@ -131,26 +121,6 @@ all_calls <- function(data, file = TRUE, max_zeros = 0.5, randomizations = 25,
     CV_data <- calculate_cvs(raw_data, max_zeros)
     message(paste("Genes remaining after zero value filtering:", nrow(CV_data)))
 
-    # scatter plot
-    if (scatter_plot == TRUE){
-
-        pl <- plot_scatter(data = CV_data, density)
-
-        # displaying condition
-        if (display == TRUE){
-
-            plot(pl)
-            message("Generated scatter plot.")
-        }
-
-        # saving condition
-        if (save == TRUE){
-
-            ggsave(paste("scatter_plot.", format, sep=""), path = plot_path)
-            message("Saved scatter plot in selected directory as 'scatter_plot'.")
-        }
-    }
-
     # extract top genes using selected method and parameter
     divided_data <- extract_top_genes(CV_data, method = top_method,
                                           parameter = filter_parameter)
@@ -158,25 +128,6 @@ all_calls <- function(data, file = TRUE, max_zeros = 0.5, randomizations = 25,
     # bin rest of data using selected method and parameter
     all_data <- bin_scdata(divided_data, method = bin_method,
                                             parameter = bin_parameter)
-
-    # bins plot
-    if (bins_plot == TRUE){
-
-        pl <- plot_bins(data = all_data)
-
-        # displaying condition
-        if (display == TRUE){
-            plot(pl)
-            message("Generated plot of binned data.")
-        }
-
-        # saving condition
-        if (save == TRUE){
-
-            ggsave(paste("bins_plot.", format, sep = ""), path = plot_path)
-            message("Save binned data plot as 'bins_plot' in selected directory.")
-        }
-    }
 
     # calculate correlations
     message("Calculating correlations...")
@@ -206,79 +157,38 @@ all_calls <- function(data, file = TRUE, max_zeros = 0.5, randomizations = 25,
     message("Computing correlations of each window against control...")
     message("Note: simultaneously computing histogram values.")
 
+    dens <- list()          # list to store density computations
     histogram <- list()     # histogram values will be computed simultaneously
 
     for (i in seq_len(length(all_controls))){
 
         # generate the density data table for each window
-        dens <- compute_density(all_controls[[i]], cor_data, i)
+        dens[[i]] <- compute_density(all_controls[[i]], cor_data, i)
 
         # calculate the histogram values for each window
-        histogram[[i]] <- compute_histogram(dens)
-
-        # plotting condition
-        if (correlation_plots == TRUE){
-
-            # plot the data
-            pl <- plot_cor_dens(data = dens, i)
-
-             # displaying condition
-            if (display == TRUE){
-                plot(pl)
-            }
-
-            # saving condition
-            if (save == TRUE){
-
-                ggsave(paste("Random negative control - WIndow", i, ".", format, sep = ""),
-                    path = plot_path)
-                message(paste("Correlation plot", i, "saved in selected directory."))
-            }
-
-            if (display == TRUE){
-                message("See correlation plot displayed.")
-            }
-        }
+        histogram[[i]] <- compute_histogram(dens[[i]])
     }
 
     # bind all histogram values
     all_hist_values <- data.frame(do.call(rbind, histogram))
     message("Histogram values computed successfully!")
 
-    # plot the histogram
-    if (histogram_plot == TRUE){
-        
-        # generate plot title
-        hist_title <- paste("Top window:", top_method, "=", filter_parameter,
+    # create a string with all the info about the analysis to use as a histogram title
+    info <- paste("Top window:", top_method, "=", filter_parameter,
               ", size:", nrow(divided_data$topgenes),
               "| Bins:", max(all_data$bin), ",",
               nrow(subset(all_data, bin == 2)), "genes/bin",
               "| Cells:", ncol(raw_data))
-        
-        pl <- plot_histogram(data = all_hist_values, title = hist_title)
 
-        # display condition
-        if (display == TRUE){
-            plot(pl)
-            message("Plotted histogram.")
-        }
-
-        # saving condition
-        if (save == TRUE){
-
-            ggsave(paste("histogram.", format, sep=""), path = plot_path)
-            message("Saved histogram as 'histogram' in selected directory.")
-        }
-    }
-
-    # filter the data using the histogram values
-    message("Filtering data...")
-    quality_filtered_data <- filter_data(all_data, all_hist_values, histogram_threshold)
-    message("Data was filtered according to set threshold. Analysis finished.")
-
+    # store all results in a list
+    results <- list(raw = raw_data, cv = CV_data, binned = all_data, 
+                    window_correlations = cor_data, controls = all_controls,
+                    densities = dens, histogram = all_hist_values, info = info)
+    
+    # report computing time
     t <- trunc(Sys.time() - t0)
     message(paste("Total computation time:", t, "min."))
 
-    # return the filtered data
-    return(quality_filtered_data)
+    # return all the generated results
+    return(results)
 }

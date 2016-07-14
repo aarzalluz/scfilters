@@ -4,16 +4,13 @@
 \alias{all_calls}
 \title{Run the method.}
 \usage{
-all_calls(file, max_zeros = 0.5, randomizations = 25,
+all_calls(data, import = TRUE, max_zeros = 0.5, randomizations = 25,
   top_method = "window_size", filter_parameter = 100,
-  bin_method = "window_number", bin_parameter = 30, save = FALSE,
-  plot_path = NULL, format = "png", display = TRUE, scatter_plot = TRUE,
-  density = FALSE, bins_plot = TRUE, correlation_plots = TRUE,
-  histogram_plot = TRUE, cor_method = "pearson",
-  histogram_threshold = 0.1)
+  bin_method = "window_number", bin_parameter = 30,
+  cor_method = "pearson")
 }
 \arguments{
-\item{file}{A file or path containing the expression value table.}
+\item{data}{A file name, path or data frame containing the expression value table.}
 
 \item{max_zeros}{A number of type double. Indicates the maximum proportion
 of zeros allowed per row in the raw data.}
@@ -31,29 +28,45 @@ selection method.}
 \item{bin_parameter}{An integer. Specifies the parameter for the selected 
 binning method.}
 
-\item{save}{Logical. When \code{TRUE}, generated plots will be saved.}
-
-\item{plot_path}{A string. Supplies a path to save plots to.}
-
-\item{format}{A string. Indicates the file format of plot files.}
-
-\item{display}{Logical. When \code{TRUE}, generated plots will be simultaneously 
-displayed during the analysis.}
-
-\item{scatter_plot, bins_plot, correlation_plots, histogram_plot}{Logicals. 
-When \code{TRUE}, plots will be generated through the analysis.}
-
-\item{density}{Logical. Indicates whether scatter density should be shown
-in the scatter plot.}
-
 \item{cor_method}{A string. Indicates the correlation method to use.}
 
-\item{histogram_threshold}{A number of type double. Provides threshold for
-final data filtering.}
+\item{imort}{A logical. Indicates whether raw data should be imported \code{data}
+from a file or path (\code{TRUE}) or is in a frame already loaded into R 
+(\code{FALSE}).}
 }
 \value{
-A data frame containing expression values for genes remaining after
-filtering, output by the \code{\link{filter_data}} function.
+A list containing all the results generated during the analysis. Each
+element on the list contains the results of a function call, and is named as follows:
+
+\itemize{
+
+     \item \code{raw} contains the raw data table as it was imported.
+     
+     \item \code{cv} contains the data frame output by \code{calculate_cvs}, which
+     includes all the data plus the mean, cv and standard deviation columns.
+     
+     \item \code{binned} contains all the data as output by the combined call of
+     \code{extract_top_genes} and \code{bin_scdata}, which includes the bin number
+     column in the data frame.
+     
+     \item \code{window_correlations} contains the output of \code{correlate}, which
+     outputs a list containing the vector of correlation coefficients of each window 
+     to the top window as a separate element.
+     
+     \item \code{controls} contains a nested list with the controls -as many as 
+     randomizations- computed for each window, as output by calling \code{randomize_top} and 
+     \code{compute_control} once per window.
+     
+     \item \code{densities} contains a list where the outputs of \code{compute_density}
+     for each window are stored as a separate element.
+     
+     \item \code{histogram} contains a data frame with all the histogram values.
+     
+     \item \code{info} contains a string in which all the necessary information about
+     the analysis is included. This should be used as the histogram title.
+}
+
+\strong{Note:} use these names to retrieve information by subsetting using \code{$}.
 }
 \description{
 The \code{all_calls} function calls all the functions that form the package
@@ -71,14 +84,6 @@ control any more informative.
 
 \code{max_zeros} is passed as an argument of the \code{\link{calculate_cvs}} 
 function. For details on values and meaning, see this object's documentation.
-
-\code{histogram_threshold} is passed as an argument of the \code{\link{filter_data}}
-function.
-
-\code{all_calls} also includes calls to plotting functions. Plots will be saved in 
-R's working directory, unless otherwise specified. Also, if the indicated directory 
-does not exist in the current working directory, it will be created inside it. 
-When unspecified, the function will not save the plots, but only display them.
  
 When run, \code{all_calls} also displays useful messages that help the user
 track analysis progression, as well as information on the operations performed 

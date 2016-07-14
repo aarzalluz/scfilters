@@ -7,18 +7,33 @@
 \alias{plot_scatter}
 \title{Plotting the results.}
 \usage{
-plot_scatter(data, density = FALSE, shape = 16, size = 0.5, alpha = 0.5,
-  ...)
+plot_scatter(data, save = FALSE, display = TRUE, path = ".",
+  filename = "scatter_plot", format = "png", density = FALSE,
+  shape = 16, size = 0.5, alpha = 0.5, ...)
 
-plot_bins(data, shape = 16, alpha = 0.5, size = 0.5, ...)
+plot_bins(data, save = FALSE, display = TRUE, path = ".",
+  filename = "bins_plot", format = "png", shape = 16, alpha = 0.5,
+  size = 0.5, ...)
 
-plot_cor_dens(data, window, ribbon_col = "grey", ribbon_alpha = 0.2, ...,
-  curve_cols = c("black", "red"))
+plot_cor_dens(data, save = FALSE, display = TRUE, path = ".",
+  filename = NULL, format = "png", window, ribbon_col = "grey",
+  ribbon_alpha = 0.2, ..., curve_cols = c("black", "red"))
 
-plot_histogram(data, title, ylim = 0.8, ...)
+plot_histogram(data, save = FALSE, display = TRUE, path = ".",
+  filename = "histogram", format = "png", title, ylim = 1, ...)
 }
 \arguments{
 \item{data}{A data frame containing the suitably formatted data for the specified plot.}
+
+\item{save}{A logical. When \code{TRUE}, plots will be saved to the indicated path.}
+
+\item{display}{A logical. When \code{TRUE}, plots will be displayed.}
+
+\item{path}{A string indicating a path to save the plot to.}
+
+\item{filename}{A string indicating the name of the plot file.}
+
+\item{format}{A string indicating the file format of the plot.}
 
 \item{density}{Logical. Specifies whether the scatter plot will incorporate scatter
 density lines.}
@@ -61,19 +76,27 @@ package. Associations are as follows:
 \item \code{plot_scatter} plots the output of the \code{\link{calculate_cvs}} 
      function, more specifically, only the \code{CV} and \code{mean} columns. However, 
      the plotting function selects these automatically, and the entire data frame 
-     should be provided by the user when calling it.
+     should be provided by the user when calling it. 
+     
+     If running \code{\link{all_calls}}, this can be done by subsetting the results 
+     using \code{$cv}.
      
      \item \code{plot_bins} plots the output of the \code{\link{bin_scdata}} function.
      Similarly, the entire data frame should be provided, as the function will select 
      the \code{CV}, \code{mean} and \code{bin} columns automatically from it.
      
+     Subset the appropriate results from \code{all_calls} using \code{$binned}.
+     
       \item \code{plot_cor_dens} plots the output of the \code{\link{compute_density}} 
       function.It should be noted that this function outputs the density computations 
-      for only one window,
-      and therefore, the plotting function must be called again after each computation. 
+      for only one window, and therefore, the plotting function must be called again 
+      after each computation. 
+      
+      Subset the appropriate results from \code{all_calls} using 
+      \code{$densities[[window number]]}.
       
       \item \code{plot_histogram} plots the output of the \code{\link{compute_histogram}} 
-      function
+      function. Subset \code{all_calls} results using \code{$histogram}.
 }
 
 For the \code{...} argument:

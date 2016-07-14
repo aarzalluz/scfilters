@@ -11,19 +11,27 @@
 #'      \item \code{plot_scatter} plots the output of the \code{\link{calculate_cvs}} 
 #'      function, more specifically, only the \code{CV} and \code{mean} columns. However, 
 #'      the plotting function selects these automatically, and the entire data frame 
-#'      should be provided by the user when calling it.
+#'      should be provided by the user when calling it. 
+#'      
+#'      If running \code{\link{all_calls}}, this can be done by subsetting the results 
+#'      using \code{$cv}.
 #'      
 #'      \item \code{plot_bins} plots the output of the \code{\link{bin_scdata}} function.
 #'      Similarly, the entire data frame should be provided, as the function will select 
 #'      the \code{CV}, \code{mean} and \code{bin} columns automatically from it.
 #'      
+#'      Subset the appropriate results from \code{all_calls} using \code{$binned}.
+#'      
 #'       \item \code{plot_cor_dens} plots the output of the \code{\link{compute_density}} 
 #'       function.It should be noted that this function outputs the density computations 
-#'       for only one window,
-#'       and therefore, the plotting function must be called again after each computation. 
+#'       for only one window, and therefore, the plotting function must be called again 
+#'       after each computation. 
+#'       
+#'       Subset the appropriate results from \code{all_calls} using 
+#'       \code{$densities[[window number]]}.
 #'       
 #'       \item \code{plot_histogram} plots the output of the \code{\link{compute_histogram}} 
-#'       function
+#'       function. Subset \code{all_calls} results using \code{$histogram}.
 #' }
 #' 
 #' For the \code{...} argument:
@@ -47,6 +55,16 @@
 #' \code{plot} function on it.
 #'
 #' @param data A data frame containing the suitably formatted data for the specified plot.
+#' 
+#' @param save A logical. When \code{TRUE}, plots will be saved to the indicated path.
+#' 
+#' @param display A logical. When \code{TRUE}, plots will be displayed.
+#' 
+#' @param path A string indicating a path to save the plot to. 
+#' 
+#' @param filename A string indicating the name of the plot file.
+#' 
+#' @param format A string indicating the file format of the plot.
 #' 
 #' @param density Logical. Specifies whether the scatter plot will incorporate scatter
 #' density lines.
@@ -75,7 +93,8 @@
 #' 
 #' @return A list, containing the information of the generated plot.
 
-plot_scatter <- function(data, density = FALSE, shape = 16, size = 0.5, alpha = 0.5, ...){
+plot_scatter <- function(data, save = FALSE, display = TRUE, path = ".", filename = "scatter_plot", 
+                         format = "png", density = FALSE, shape = 16, size = 0.5, alpha = 0.5, ...){
     
     # plot CV and mean columns from the CV object
     pl <- ggplot(data, aes(x = CV, y = mean + 1)) +
@@ -91,13 +110,25 @@ plot_scatter <- function(data, density = FALSE, shape = 16, size = 0.5, alpha = 
     if (density == TRUE){
         pl <- pl + geom_density_2d()
     }
-    
-    pl
+
+    # save or display the plot
+    if (save == TRUE){
+        
+        # save to path
+        ggsave(paste0(filename, format), path = path)
+    } 
+    if (display == TRUE){
+        
+        # display the plot
+        message("See scatter plot displayed.")
+        pl
+    }
 }
 
 #' @rdname plot_scatter
 
-plot_bins <- function(data, shape = 16, alpha = 0.5, size = 0.5, ...){
+plot_bins <- function(data, save = FALSE, display = TRUE, path = ".", filename = "bins_plot",
+                      format = "png", shape = 16, alpha = 0.5, size = 0.5, ...){
     
     # plot data assigning colors by window
     pl <- ggplot(data, aes(x = CV, y = mean + 1, colour = factor(data$bin+1))) +
@@ -108,11 +139,25 @@ plot_bins <- function(data, shape = 16, alpha = 0.5, size = 0.5, ...){
         # label plot
         ylab("Mean expression") + xlab("Coefficient of variation")
     
+    # save or display the plot
+    if (save == TRUE){
+        
+        # save to path
+        ggsave(paste0(filename, format), path = path)
+        
+    } 
+    if (display == TRUE){
+        
+        # display the plot
+        message("See bins plot displayed.")
+        pl   
+    }
 }
 
 #' @rdname plot_scatter
 
-plot_cor_dens <- function(data, window, ribbon_col = "grey", ribbon_alpha = 0.2, 
+plot_cor_dens <- function(data, save = FALSE, display = TRUE, path = ".", filename = NULL, 
+                          format = "png", window, ribbon_col = "grey", ribbon_alpha = 0.2, 
                           ..., curve_cols = c("black", "red")){
     
     # make label for the window that is being plotted
@@ -133,11 +178,32 @@ plot_cor_dens <- function(data, window, ribbon_col = "grey", ribbon_alpha = 0.2,
         theme_bw() + scale_color_manual(values = curve_cols,
                                         labels = c("Control", window_label))
     
+    # save or display the plot
+    if (save == TRUE){
+        
+        if (is.null(filename)){
+            
+            # if filename is null, use window label
+            ggsave(paste0(window_label, format), path = path)
+            
+        } else {
+            
+            # if it is provided, use name
+            ggsave(paste0(filename, format), path = path)
+        }
+    } 
+    if (display == TRUE){
+        
+        # display the plot
+        message(paste("See density plot for", window_label, "displayed.", sep = " "))
+        pl   
+    }
 }
 
 #' @rdname plot_scatter
 
-plot_histogram <- function(data, title, ylim = 0.8, ...){
+plot_histogram <- function(data, save = FALSE, display = TRUE, path = ".", filename = "histogram",
+                           format = "png", title, ylim = 1, ...){
     
     # create plot with histogram values provided and set window numbers in the x axis
     pl <- ggplot(data, aes(x = factor(as.numeric(rownames(data))),
@@ -150,4 +216,16 @@ plot_histogram <- function(data, title, ylim = 0.8, ...){
         # add error bars
         geom_errorbar(aes(ymax = error_up, ymin = error_down), width = 0.2)
     
+    if (save == TRUE){
+        
+        # save to path
+        ggsave(paste0(filename, format), path = path)
+        
+    } 
+    if (display == TRUE){
+        
+        # display the plot
+        message("See histogram displayed.")
+        pl   
+    }
 }
