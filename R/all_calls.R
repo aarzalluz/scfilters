@@ -38,11 +38,7 @@
 #' in this package. Unless highly familiar with the method, it is not advised to 
 #' run the different functions individually.
 #' 
-#' @param data A file name, path or data frame containing the expression value table.
-#' 
-#' @param file A logical. Indicates whether the name provided in \code{data}
-#' is a file or path (\code{TRUE}) or a data frame already containing the raw data 
-#' (\code{FALSE}).
+#' @param file A file or path containing the expression value table.
 #' 
 #' @param max_zeros A number of type double. Indicates the maximum proportion
 #' of zeros allowed per row in the raw data.
@@ -83,7 +79,7 @@
 #' @return A data frame containing expression values for genes remaining after
 #' filtering, output by the \code{\link{filter_data}} function.
 
-all_calls <- function(data, file = TRUE, max_zeros = 0.5, randomizations = 25,
+all_calls <- function(file, max_zeros = 0.5, randomizations = 25,
                       # top window parameters
                       top_method = "window_size", filter_parameter = 100,
                       # binning paramaters
@@ -95,7 +91,6 @@ all_calls <- function(data, file = TRUE, max_zeros = 0.5, randomizations = 25,
                       bins_plot = TRUE, correlation_plots = TRUE, histogram_plot = TRUE,
                       # correlation method and filtering
                       cor_method = "pearson", histogram_threshold = 0.1){
-    
     t0 <- Sys.time()
 
     # make sure that plot_path is not null before its value is tested
@@ -109,15 +104,8 @@ all_calls <- function(data, file = TRUE, max_zeros = 0.5, randomizations = 25,
             dir.create(plot_path)
     }
 
-    # load data
-    if (file == TRUE){
-        # from a file
-        raw_data <- read_tsv(file)
-        
-    } else if (file == FALSE){
-        # from an existent data frame
-        raw_data <- data
-    }
+    # load data from specified path
+    raw_data <- read_tsv(file)
     message("Data loaded successfully.")
 
     # calculate CVs
