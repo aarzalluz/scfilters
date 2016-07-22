@@ -115,7 +115,7 @@ plot_scatter <- function(data, save = FALSE, display = TRUE, path = ".", filenam
     if (save == TRUE){
         
         # save to path
-        ggsave(paste0(filename, format), path = path)
+        ggsave(paste0(filename, ".", format), path = path, device = format)
     } 
     if (display == TRUE){
         
@@ -143,7 +143,7 @@ plot_bins <- function(data, save = FALSE, display = TRUE, path = ".", filename =
     if (save == TRUE){
         
         # save to path
-        ggsave(paste0(filename, format), path = path)
+        ggsave(paste0(filename, ".", format), path = path, device = format)
         
     } 
     if (display == TRUE){
@@ -184,12 +184,12 @@ plot_cor_dens <- function(data, save = FALSE, display = TRUE, path = ".", filena
         if (is.null(filename)){
             
             # if filename is null, use window label
-            ggsave(paste0(window_label, format), path = path)
+            ggsave(paste0(window_label, ".", format), path = path, device = format)
             
         } else {
             
             # if it is provided, use name
-            ggsave(paste0(filename, format), path = path)
+            ggsave(paste0(filename, ".", format), path = path, device = format)
         }
     } 
     if (display == TRUE){
@@ -219,7 +219,7 @@ plot_histogram <- function(data, save = FALSE, display = TRUE, path = ".", filen
     if (save == TRUE){
         
         # save to path
-        ggsave(paste0(filename, format), path = path)
+        ggsave(paste0(filename, ".", format), path = path, device = format)
         
     } 
     if (display == TRUE){
