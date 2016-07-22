@@ -87,7 +87,7 @@
 #' 
 #' \strong{Note:} use these names to retrieve information by subsetting using \code{$}.
 
-all_calls <- function(data, import = TRUE, max_zeros = 0.5, randomizations = 25,
+all_calls <- function(data, import = TRUE, max_zeros = 0.75, randomizations = 25,
                       # top window parameters
                       top_method = "window_size", filter_parameter = 100,
                       # binning paramaters
@@ -102,7 +102,6 @@ all_calls <- function(data, import = TRUE, max_zeros = 0.5, randomizations = 25,
     if (import == TRUE){
         # from a file
         raw_data <- read_tsv(data)
-        
     }
     if (import == FALSE){
         # from an existent data frame
@@ -111,9 +110,8 @@ all_calls <- function(data, import = TRUE, max_zeros = 0.5, randomizations = 25,
     message("Data loaded successfully.")
 
     # calculate CVs
-    if (max_zeros == 0.5){
-
-        message("Did not specify maximum proportion of zero expression values allowed: default (0.5) will be used")
+    if (max_zeros == 0.75){
+        message("Did not specify maximum proportion of zero expression values allowed: default (0.75) will be used")
     }
 
     # calculate CVs and report results of the zero value filtering
