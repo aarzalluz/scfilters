@@ -4,7 +4,7 @@
 \alias{all_calls}
 \title{Run the method.}
 \usage{
-all_calls(data, import = TRUE, max_zeros = 0.5, randomizations = 25,
+all_calls(data, import = TRUE, max_zeros = 0.75, randomizations = 25,
   top_method = "window_size", filter_parameter = 100,
   bin_method = "window_number", bin_parameter = 30,
   cor_method = "pearson")
