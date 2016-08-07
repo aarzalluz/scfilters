@@ -131,13 +131,13 @@ plot_bins <- function(data, save = FALSE, display = TRUE, path = ".", filename =
                       format = "png", shape = 16, alpha = 0.5, size = 0.5, ...){
     
     # plot data assigning colors by window
-    pl <- ggplot(data, aes(x = CV, y = mean + 1, colour = factor(data$bin+1))) +
+    pl <- ggplot(data, aes(x = CV, y = mean + 1, colour = factor(data$bin))) +
         # select point shape and specify aesthetics
         geom_point(shape = shape, alpha = alpha, size = size, ...) +
         # set log10 scale in the y axis
         scale_y_log10() +
         # label plot
-        ylab("Mean expression") + xlab("Coefficient of variation")
+        ylab("Mean expression + 1") + xlab("Coefficient of variation")
     
     # save or display the plot
     if (save == TRUE){
