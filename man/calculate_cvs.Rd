@@ -4,14 +4,14 @@
 \alias{calculate_cvs}
 \title{Calculate coefficient of variation of genes.}
 \usage{
-calculate_cvs(data, max_zeros)
+calculate_cvs(data, max_zeros = 0.75)
 }
 \arguments{
 \item{data}{A data frame, containing expression values for each gene as rows, and
 expression values for the cells as columns.}
 
 \item{max_zeros}{A double indicating the maximum proportion of zero expression values
-allowed per row.}
+allowed per row. The value of this argument must be \eqn{0 => max_zeros > 1}}
 }
 \value{
 A data frame, containing the filtered data and the mean, standard deviation and cv
@@ -21,20 +21,10 @@ values for each row.
 Calculates the coefficient of variation (CV) of each row in the supplied data table.
 }
 \details{
-Before CV computation, the function modifies the raw data in two ways:
-
-\itemize{
-     \item First, it replaces all negative values in the data frame for zeros, as negative
-     expression values are systematic artifacts caused when genes have very low expression,
-     and can interfere in CV calculation.
-
-\item Then, it removes all rows that have a proportion of zeros above the specified
-     threshold. These will be considered highly disrupted by systematic noise. Removing
-     them prevents division by zero when calculating CVs, which could lead to CV = 0 and to
-     having missing values in the correlation vectors.
-
-The value of this argument must be \eqn{0 > max_zeros > 1}.
-}
+Before CV computation, the function 
+removes all rows that have a proportion of zeros above the specified
+threshold. These will be considered highly disrupted by systematic noise. Removing
+them also prevents division by zero when calculating CVs.
 
 The data provided must contain gene names as a column in the first position, as output by the
 \code{read_tsv} function in the \code{dplyr} package, and an cell names as column names.

@@ -2,20 +2,10 @@
 #'
 #' Calculates the coefficient of variation (CV) of each row in the supplied data table.
 #'
-#' Before CV computation, the function modifies the raw data in two ways:
-#'
-#' \itemize{
-#'      \item First, it replaces all negative values in the data frame for zeros, as negative
-#'      expression values are systematic artifacts caused when genes have very low expression,
-#'      and can interfere in CV calculation.
-#'
-#'      \item Then, it removes all rows that have a proportion of zeros above the specified
-#'      threshold. These will be considered highly disrupted by systematic noise. Removing
-#'      them prevents division by zero when calculating CVs, which could lead to CV = 0 and to
-#'      having missing values in the correlation vectors.
-#'
-#'      The value of this argument must be \eqn{0 > max_zeros > 1}.
-#' }
+#' Before CV computation, the function 
+#' removes all rows that have a proportion of zeros above the specified
+#' threshold. Genes with many 0s are poorly informative, and would bias the later correlations.
+#' Removing them also prevents division by zero when calculating CVs.
 #'
 #' The data provided must contain gene names as a column in the first position, as output by the
 #' \code{read_tsv} function in the \code{dplyr} package, and an cell names as column names.
@@ -28,35 +18,41 @@
 #' expression values for the cells as columns.
 #'
 #' @param max_zeros A double indicating the maximum proportion of zero expression values
-#' allowed per row.
+#' allowed per row. The value of this argument must be \eqn{0 => max_zeros > 1}
 #'
 #' @return A data frame, containing the filtered data and the mean, standard deviation and cv
 #' values for each row.
 
-calculate_cvs <- function(data, max_zeros){
+calculate_cvs <- function(data, max_zeros = 0.75){
 
-    # convert dataset provided to data frame
-    data <- data.frame(data)
+    if(is.data.frame(data)) {
+        data <- .createGeneExpressionMatrixFromDataFrame(data)
+    }
 
-    # use first column as row names and eliminate it to keep only numeric values
-    data_labeled <- data.frame(data[, -1], row.names = make.names(data[, 1], unique = T))
+    # look for negative expression values
+    if(any(data < 0)) {
+        stop(
+            "Genes cannot have a negative expression value."
+        )
+    }
+    
+    if(max_zeros < 0 | max_zeros >= 1) {
+        stop("max_zeros should be between 0 (included) and 1 (excluded).")
+    }
 
-    # look for negative expression values and set to zero
-    m <- as.matrix(data_labeled)
-    m[m < 0] <- 0
-    data_labeled <- as.data.frame(m)
+    # remove genes with bigger proportion of zero values than indicated threshold
+    data_final <- subset(data, (rowSums(data == 0) / ncol(data)) <= max_zeros)
 
-    # calculate proportion of zero expression values per gene (row)
-    # and remove genes with bigger proportion of zero values than indicated threshold
-    data_final <- subset(data_labeled, (rowSums(data_labeled == 0) / ncol(data_labeled)) <= max_zeros)
+    # calculate mean, st dev and cv of rows
+    mean <- rowMeans(data_final, na.rm = T)
+    stdev <- apply(data_final, 1, sd, na.rm = T)
+    CV <- stdev/mean
 
-    # calculate mean and st dev of rows and add them as columns to dataframe
-    data_final$mean <- rowMeans(data_final, na.rm = T)
-    data_final$stdev <- apply(data_final, 1, sd, na.rm = T)
-
-    # calculate CVs
-    data_final$CV <- data_final$stdev/data_final$mean
-
-    # return full dataset with new columns for mean, st dev and CV
-    return(data_final)
+    return(as_data_frame(cbind(
+        geneName = rownames(data_final),
+        mean = mean,
+        sd = stdev,
+        cv = CV,
+        data_final
+    )))
 }
