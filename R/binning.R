@@ -51,25 +51,15 @@ extract_top_genes <- function(dataset,
 
         # the parameter will be the window size
         window_size <- parameter
-
-        # save row names
-        dataset$rownames <- rownames(dataset)
         # sort data by mean expression - original row names are lost
         sorted_values <- arrange(dataset, desc(mean))
-        # assign row names again
-        rownames(sorted_values) <- sorted_values$rownames
-        # eliminate the row names column
-        sorted_values <- select(sorted_values, -rownames)
-
         # select the top x genes (x=window size selected)
         divided_data$topgenes <- sorted_values[1:window_size, ]
         # assign bin 0 to the top window
         divided_data[[1]]$bin <- 0
-
         # display mean FPKM value of the last gene in the top window
-        message(paste("Generated top window successfully! Mean expression of last top gene:",
+        message(paste("Mean expression of last top gene:",
                       sorted_values[window_size, ]$mean))
-
         # store the rest of the genes a the second element of the list
         divided_data$restofgenes <- sorted_values[-(1:nrow(divided_data$topgenes)), ]
 
