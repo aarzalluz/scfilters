@@ -2,35 +2,46 @@
 % Please edit documentation in R/calculate_cvs.R
 \name{calculate_cvs}
 \alias{calculate_cvs}
-\title{Calculate coefficient of variation of genes.}
+\title{Compute mean expression levels, standard deviations and coefficients of variation of each feature.}
 \usage{
 calculate_cvs(data, max_zeros = 0.75)
 }
 \arguments{
-\item{data}{A data frame, containing expression values for each gene as rows, and
+\item{data}{A data frame or a matrix, containing expression values for each gene as rows, and
 expression values for the cells as columns.}
 
-\item{max_zeros}{A double indicating the maximum proportion of zero expression values
-allowed per row. The value of this argument must be \eqn{0 => max_zeros > 1}}
+\item{max_zeros}{A number between 0 and 1 indicating the maximum proportion of zero expression values
+allowed per row. Features with a higher proportion of 0 will be discarded.}
 }
 \value{
-A data frame, containing the filtered data and the mean, standard deviation and cv
+A data frame, containing the filtered data with additional columns: mean, standard deviation and cv
 values for each row.
 }
 \description{
-Calculates the coefficient of variation (CV) of each row in the supplied data table.
+Compute mean expression levels, standard deviations and coefficients of variation (CV)
+of each feature (i.e. gene or transcript) in the supplied data.
+Filter features with high proportion of 0 expression.
 }
 \details{
-Before CV computation, the function 
+Before CV computation, the function
 removes all rows that have a proportion of zeros above the specified
-threshold. These will be considered highly disrupted by systematic noise. Removing
-them also prevents division by zero when calculating CVs.
+threshold. Genes with many 0s are poorly informative, and would bias the later correlations.
+Removing them also prevents division by zero when calculating CVs.
 
-The data provided must contain gene names as a column in the first position, as output by the
-\code{read_tsv} function in the \code{dplyr} package, and an cell names as column names.
-These names will be assigned as the rownames of the output data frame.
+The data provided must cell/sample names as column names. Feature name can be given either in the
+first column or as rownames.
 
 In the output, mean, standard deviation and CV are incorporated as new columns in the data
-frame, named \code{mean}, \code{sd} and \code{CV}.
+frame, named \code{mean}, \code{sd} and \code{cv}.
 }
-
+\examples{
+expMat <- matrix(
+    c(1, 1, 1,
+      1, 2, 3,
+      0, 1, 2,
+      0, 0, 2),
+    ncol = 3, byrow = TRUE, dimnames = list(paste("gene", 1:4), paste("cell", 1:3))
+)
+calculate_cvs(expMat)
+calculate_cvs(expMat, max_zeros = 0.5)
+}

@@ -1,0 +1,47 @@
+
+.applyDensity <- function(x, n = 64, absolute_cc = TRUE) {
+    if (absolute_cc) {
+        myDens <- density(abs(x), n = n, from = 0, to = 1, cut = 0)
+    } else {
+        myDens <- density(x, n = n, from = -1, to = 1, cut = 0)
+    }
+    return(list(
+        cor_coef = myDens$x,
+        density = myDens$y
+    ))
+}
+
+#' Transform the correlation table to density distributions of correlation values
+#'
+#' Takes the output of \code{\link{correlate_windows}} and compute density curves of correlation coefficient
+#' for each window comparison.
+#'
+#' @param df A data frame, usually the output of \code{\link{correlate_windows}}.
+#'
+#' @param n Resolution of the correlation density curve. Default to 64.
+#'
+#' @param absolute_cc Should the function work of absolute value of correlation coefficients?
+#' Default to \code{TRUE} to simplify plots and avoid annoying, non-symmetrical, near 0, shifts of distributions.
+#'
+#' @return A \code{\link{tibble}} with columns \code{bin}, \code{window}, \code{cor_coef} and \code{density}.
+#'
+#' @examples
+#' #' expMat <- matrix(
+#'     c(1, 1, 5,
+#'       1, 2, 3,
+#'       0, 1, 4,
+#'       0, 0, 2),
+#'     ncol = 3, byrow = TRUE, dimnames = list(paste("gene", 1:4), paste("cell", 1:3))
+#' )
+#'
+#' calculate_cvs(expMat) %>%
+#'     define_top_genes(window_size = 2) %>%
+#'     bin_scdata(window_number = 1) %>%
+#'     correlate_windows %>%
+#'     correlations_to_densities
+
+correlations_to_densities <- function(df, n = 64, absolute_cc = TRUE) {
+    dplyr::group_by(df, bin, window) %>%
+        dplyr::do(do.call(dplyr::data_frame, .applyDensity(.$cor_coef, n = n, absolute_cc = absolute_cc))) %>%
+        ungroup
+}

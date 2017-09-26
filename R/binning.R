@@ -1,108 +1,113 @@
-#' Select top highly expressed genes.
+#' Define the top highly expressed gene window.
 #'
-#' Selects the group of genes in the dataset that will be considered more highly expressed,
-#' the top window, using the filtering method chosen by the user.
+#' Define the group of genes in the dataset that will be considered as reference,
+#' the top window, by specifying either a number of genes or an expression threshold.
 #'
 #' There are three selection methods available:
 #'
 #' \itemize{
 #'
-#'      \item \code{"window_size"}: genes are ranked by mean expression, and a subset of the size
-#'      indicated in \code{parameter} is selected from the top.
+#'      \item \code{window_size}: genes are ranked by mean expression across cells, and the top slice
+#'      of the specified size is selected.
 #'
-#'      \item \code{"min_expression"}: genes where all expression values are above a minimum
-#'      expression threshold indicated in \code{parameter} are selected.
+#'      \item \code{mean_expression}: the \code{mean} column is checked, and all genes with mean
+#'      expression above the threshold indicated are selected.
 #'
-#'      \item \code{"mean_expression"}: the \code{mean} column is checked, and all genes with mean
-#'      expression above the threshold indicated in \code{parameter} are selected.
+#'      \item \code{min_expression}: genes where all expression values are above the
+#'      expression threshold indicated are selected.
+#'
 #' }
 #'
-#' There are no restrictions to the \code{parameter} argument, however, the value should
-#' be coherent with the characteristics of the data set provided and the chosen method.
-#'
-#' In general, it is adviseable to avoid generating top windows much larger than 250 genes,
+#' In general, it is advisable to avoid generating top windows larger than 250 genes
+#' (100 genes is the recommended value),
 #' to prevent excessively long computation time as well as to preserve the quality of the
-#' analysis, as the top window should only include a subset of reliable values. As a rule,
-#' the bigger the top window is, the more likely is that the reliability of the values is
-#' compromised, given the characteristics of single cell RNA sequencing data.
+#' analysis, as the top window should only include a subset of reliable values.
 #'
 #' @param dataset A data frame, containing genes as rows and cells as columns, and where
-#' the mean expression value for each gene has been added as a column.
+#' the mean expression value for each gene has been added as a column. Usually the output of
+#' \code{calculate_cvs}.
 #'
-#' @param method A string indicating the method to use when creating the top window. If no
-#' method is indicated, \code{"window_size"} will be used.
+#' @param window_size Number of genes in the defined top window. Recommended to 100 genes.
 #'
-#' @param parameter An integer. Indicates the numeric parameter to use in the previously
-#' chosen method.
+#' @param mean_expression A number. Genes with a mean expression across cells higher than the value
+#' will be selected. Ignored if \code{window_size} is defined.
 #'
-#' @return A list with two elements, both data frames: the generated top window, and
+#' @param min_expression A number. Genes with a minimum expression across all cells higher than the value
+#' will be selected. Ignored if \code{window_size} or \code{mean_expression} is defined.
+#'
+#' @return A list with two elements, both data frames: the defined top window, and
 #' the rest of the genes.
+#'
+#' @examples
+#' expMat <- matrix(
+#'     c(1, 1, 1,
+#'       1, 2, 3,
+#'       0, 1, 2,
+#'       0, 0, 2),
+#'     ncol = 3, byrow = TRUE, dimnames = list(paste("gene", 1:4), paste("cell", 1:3))
+#' )
+#'
+#' calculate_cvs(expMat) %>%
+#'     define_top_genes(window_size = 2)
+#'
+#' calculate_cvs(expMat) %>%
+#'     define_top_genes(mean_expression = 1.5)
 
-extract_top_genes <- function(dataset,
-                              method = c("window_size", "min_expression", "mean_expression"),
-                              parameter){
+define_top_genes <- function(dataset,
+                              window_size = NULL,
+                              mean_expression = NULL,
+                              min_expression = NULL
+                              ){
     divided_data <- list()
     expr_values <- data.frame()
     sorted_values <- data.frame()
 
-    method <- match.arg(method)
+    if (is.null(window_size) & is.null(mean_expression) & is.null(min_expression)) stop("Need to provide one of the following parameter: window_size, mean_expression or min_expression")
 
-    if (method == "window_size"){
+    if (is.numeric(window_size)){
 
-        # the parameter will be the window size
-        window_size <- parameter
         # sort data by mean expression - original row names are lost
         sorted_values <- arrange(dataset, desc(mean))
         # select the top x genes (x=window size selected)
         divided_data$topgenes <- sorted_values[1:window_size, ]
         # assign bin 0 to the top window
-        divided_data[[1]]$bin <- 0
+        divided_data[[1]]$bin <- 1
         # display mean FPKM value of the last gene in the top window
         message(paste("Mean expression of last top gene:",
                       sorted_values[window_size, ]$mean))
         # store the rest of the genes a the second element of the list
         divided_data$restofgenes <- sorted_values[-(1:nrow(divided_data$topgenes)), ]
 
-    } else if (method == "min_expression"){
+    } else if (is.numeric(mean_expression)){
 
-        # the parameter will be the min expression threshold
-        min_expr_threshold <- parameter
+        # select top genes and store in first position of the list
+        divided_data$topgenes <- subset(dataset, dataset$mean > mean_expression)
+        # assign bin 0 to the top window
+        divided_data[[1]]$bin <- 1
+        # display number of genes in the window
+        message(paste("Number of genes in top window:",
+                      nrow(divided_data$topgenes)))
+        # store rest of genes in second position
+        divided_data$restofgenes <- subset(dataset, dataset$mean < mean_expression)
+
+    } else if (is.numeric(min_expression)){
 
         # extract expression values
-        expr_values <- select(dataset, -mean, -stdev, -CV)
-
+        expr_values <- dplyr::select(dataset, -geneName, -mean, -sd, -cv)
         # select top genes and store in first position of the list
         divided_data$topgenes <- subset(dataset,
-                                        rowSums(expr_values > min_expr_threshold) == ncol(expr_values))
-
+                                        rowSums(expr_values > min_expression) == ncol(expr_values))
         # assign bin 0 to the top window
-        divided_data[[1]]$bin <- 0
-
+        divided_data[[1]]$bin <- 1
         # display number of genes in the window
-        message(paste("Generated top window successfully! Number of genes in top window:",
+        message(paste("Number of genes in top window:",
                       nrow(divided_data$topgenes)))
-
         # store rest of genes in second position
         divided_data$restofgenes <- subset(dataset,
-                                           rowSums(expr_values > min_expr_threshold) != ncol(expr_values))
+                                           rowSums(expr_values > min_expression) != ncol(expr_values))
 
-    } else if (method == "mean_expression"){
-
-        # the parameter will be the mean expression threshold
-        mean_threshold <- parameter
-
-        # select top genes and store in first position of the list
-        divided_data$topgenes <- subset(dataset, dataset$mean > mean_threshold)
-
-        # assign bin 0 to the top window
-        divided_data[[1]]$bin <- 0
-
-        # display number of genes in the window
-        message(paste("Generated top window successfully! Number of genes in top window:",
-                      nrow(divided_data$topgenes)))
-
-        # store rest of genes in second position
-        divided_data$restofgenes <- subset(dataset, dataset$mean < mean_threshold)
+    } else {
+        stop("The second parameter should be numeric.")
     }
 
     return(divided_data)
@@ -110,82 +115,80 @@ extract_top_genes <- function(dataset,
 
 #' Bin genes by mean expression.
 #'
-#' Divides the genes that were not included in the top window in windows of the same size,
-#' by their mean expression.
+#' Divides the genes that were not included in the top window in windows of the same size with decreasing
+#' mean expression levels.
 #'
-#' There are two binning methods available:
+#' Two binning methods are available:
 #'
 #' \itemize{
-#'      \item \code{"window_number"}: Divides the genes into the number of windows specified in
-#'      \code{parameter}, regardless of their size.
+#'      \item \code{window_number}: Divides the genes into the number of windows specified.
 #'
-#'      \item \code{"window_size"}: Divides the genes into windows of the size specified in
-#'      \code{parameter}, regardless of the number of windows generated.
+#'      \item \code{window_size}: Divides the genes into windows of the size specified.
 #' }
 #'
-#' This function uses the \code{ntile} function, in the \code{dplyr} package to assign a bin
-#' number to each gene based on the value contained in the \code{mean} column, corresponding
-#' to its mean expression. These are then added as a the column \code{bin} using the \code{mutate}
-#' function, also in the \code{dplyr} package.
+#' This function adds a bin number column to the data frame.
 #'
-#' \strong{Important note:} This function is designed to take the list output by the
+#' This function is designed to take the list output by the
 #' \code{extract_top_window} function as an argument, operating only on the second element
-#' of it.
-#'
-#' Once the genes in it have been binned, both elements of the list are bound
-#' together in a data frame and returned. The output is similar, but a new column \code{bin}
-#' is added, which indicates the window number assigned to each gene.
+#' of it. Once the genes in it have been binned, both elements of the list are bound
+#' together in a data frame and returned. The output contains a new column \code{bin},
+#' which indicates the window number assigned to each gene.
 #'
 #' @param dataset A list, containing the top window generated by \code{extract_top_genes}
-#' as the first element, and the rest of undivided genes as the second.
+#' as the first element, and the rest of undivided genes as the second. Usually the output
+#' of \code{define_top_genes}
 #'
-#' @param method A string, indicating the method to be used to bin the genes by mean
-#' expression.
+#' @param window_number An integer, indicating the number of bins to be used.
 #'
-#' @param parameter An integer. Indicates the numeric parameter to use in the previously
-#' chosen method. Values are not restricted, but should be coherent with the method of choice.
+#' @param window_size An integer, indicating the number of genes to be included
+#'  in each window. Ignored if \code{window_size} is defined.
 #'
 #' @return A data frame containing the binned genes.
+#'
+#' @examples
+#' expMat <- matrix(
+#'     c(1, 1, 1,
+#'       1, 2, 3,
+#'       0, 1, 2,
+#'       0, 0, 2),
+#'     ncol = 3, byrow = TRUE, dimnames = list(paste("gene", 1:4), paste("cell", 1:3))
+#' )
+#'
+#' calculate_cvs(expMat) %>%
+#'     define_top_genes(window_size = 1) %>%
+#'     bin_scdata(window_number = 2)
+#'
+#' calculate_cvs(expMat) %>%
+#'     define_top_genes(window_size = 1) %>%
+#'     bin_scdata(window_size = 1)
 
-bin_scdata <- function(dataset,  method = c("window_number", "window_size"), parameter){
+bin_scdata <- function(dataset, window_number = NULL, window_size = NULL, verbose = TRUE){
 
-    method <- match.arg(method)
+    if (is.null(window_number) & is.null(window_size)) stop("Need to provide window_number or window_size.")
 
-    # save row names
-    dataset[[2]]$rownames <- rownames(dataset$restofgenes)
-
-    # classify data into windows
-    if (method == "window_number"){
-
+    if (is.numeric(window_number)){
         # bin into the selected number of windows
-        windows <- ntile(desc(dataset[[2]]$mean), parameter)
-
-    } else if (method == "window_size"){
+        windows <- ntile(desc(dataset[[2]]$mean), window_number) + 1
+    } else if (is.numeric(window_size)){
         # calculate number of windows of selected window size possible and bin
-        windows <- ntile(desc(dataset[[2]]$mean), trunc(nrow(dataset$restofgenes)/parameter))
+        windows <- dplyr::ntile(dplyr::desc(dataset[[2]]$mean), trunc(nrow(dataset$restofgenes)/window_size)) + 1
+    } else {
+        stop("The second parameter should be numeric.")
     }
-
-    # add new column indicating the window in which each gene falls
     dataset$restofgenes <- mutate(dataset$restofgenes, bin = windows)
-    # set row names again
-    rownames(dataset$restofgenes) <- dataset[[2]]$rownames
-    # delete row names column
-    dataset$restofgenes <- select(dataset$restofgenes, -rownames)
 
-    if (method == "window_number"){
-
-        # print size of the desired number of windows created
-        message(paste("Binned data successfully! Size of windows:", nrow(subset(dataset[[2]], bin == 1))))
-
-    } else if (method == "window_size"){
-
-        # print number of windows of desired size created
-        message(paste("Binned data successfully! Number of windows:", max(dataset[[2]]$bin)))
+    if (verbose) {
+        if (is.numeric(window_number)){
+            # print size of the desired number of windows created
+            message(paste("Window size:", length(which(dataset[[2]]$bin == 2))))
+        } else if (is.numeric(window_size)){
+            # print number of windows of desired size created
+            message(paste("Number of windows:", max(dataset[[2]]$bin)))
+        }
     }
 
     # bind all the data and correct bin number
-    dataset <- do.call("rbind", dataset) %>% as.data.frame()
-    dataset$bin <- dataset$bin + 1
-
+    dataset <- dplyr::bind_rows(dataset) %>%
+        dplyr::select(geneName, mean, sd, cv, bin, everything())
     return(dataset)
 }

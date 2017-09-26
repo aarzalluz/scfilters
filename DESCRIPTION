@@ -1,21 +1,24 @@
-Package: scfilters
+Package: scFeatureFilter
 Type: Package
 Title: A correlation-based method for quality filtering of single-cell RNAseq
     data
-Version: 0.1.0
-Authors@R: person("Angeles", "Arzalluz-Luque", email = "angeles.arzalluz@gmail.com",
-                    role = c("aut", "cre"))
+Version: 0.5.0
+Authors@R: c(
+	person("Angeles", "Arzalluz-Luque", email = "angeles.arzalluz@gmail.com", role = c("aut", "cre")),
+	person("Guillaume", "Devailly", email = "gdevailly@hotmail.com", role = c("aut", "cre")),
+	person("Anna", "Mantsoki", email = "gdevailly@hotmail.com", role = c("aut")),
+	person("Anagha", "Joshi", role = c("aut"))
+)
 Description: An R implementation of the correlation-based method developed in
     the Joshi laboratory to analyse and filter processed single-cell RNAseq data. It
     returns a filtered version of the data containing only genes expression values
     unaffected by systematic noise.
 License: file LICENSE
 LazyData: TRUE
-Depends:
-    R (>= 3.2.3)
-Imports:
-    dplyr,
-    ggplot2,
-    readr
-RoxygenNote: 5.0.1
-Suggests: testthat
+Depends: R (>= 3.2.3)
+Imports: dplyr (>= 0.5.0), ggplot2 (>= 2.1.0)
+RoxygenNote: 6.0.1
+Suggests: testthat,
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

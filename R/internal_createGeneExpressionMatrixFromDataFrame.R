@@ -1,14 +1,17 @@
+# internal function
+# transform input dataframe into matrix with colnames and rownames
+
 .createGeneExpressionMatrixFromDataFrame <- function(myDataFrame) {
-    
+
     if(!is.data.frame(myDataFrame)) {
         stop(paste(
             deparse(substitute(myDataFrame)),
             "is not a data.frame."
         ))
     }
-    
-    firstColumn <-  select(myDataFrame, 1) %>% unlist(use.names = FALSE)
-    
+
+    firstColumn <-  dplyr::select(myDataFrame, 1) %>% unlist(use.names = FALSE)
+
     if(is.character(firstColumn) | is.factor(firstColumn)) {
         if(any(duplicated(firstColumn))) {
             warning(paste(
@@ -21,7 +24,7 @@
     } else {
         outputMatrix <- as.matrix(myDataFrame)
     }
-    
+
     if(!is.numeric(outputMatrix)) {
         stop(paste(
             "Could not tranform",
@@ -29,7 +32,7 @@
             "into a numeric matrix."
         ))
     }
-    
+
     return(outputMatrix)
 }
 
