@@ -27,7 +27,8 @@
 #' )
 #' filter_expression_table(myData, bin_cutoff = 2)
 #' filter_expression_table(myData, bin_cutoff = 3)
-
+#'
+#' @export
 filter_expression_table <- function(bined_table, bin_cutoff, as_matrix = FALSE) {
 
     if (!is.null(bin_cutoff)) {

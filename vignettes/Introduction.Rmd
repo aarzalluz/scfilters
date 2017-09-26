@@ -9,17 +9,6 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include=FALSE}
-library(testthat)
-library(devtools)
-library(dplyr)
-library(ggplot2)
-library(roxygen2)
-
-load_all(pkg = "F:/divers/moi/Roslin/scpackage/scFeatureFilter")
-theme_set(theme_bw())
-```
-
 # Preamble
 ## Package aim
 One early step of single cell RNA-seq analysis is the filtering of features (i.e. genes or transcripts)
@@ -54,6 +43,16 @@ The variation of the distributions of correlation coefficients can be used to in
 ## Installation
 Instructions to arrive shortly.
 
+Once installed, the package is ready to be loaded:
+```{r}
+library(scFeatureFilter)
+
+# we then edit the plot theme
+library(ggplot2)
+theme_set(theme_bw())
+```
+
+
 # Integrated usage
 You can use the package in a single function call, that will filter the expression matrix
 to keep only the most informative highly expressed features:
@@ -86,6 +85,8 @@ calculate_cvs(scData_hESC)
 
 We can explore the mean - variance relationship of the dataset with the `plot_mean_variance` function:
 ```{r collapse=TRUE}
+library(magrittr) # to use the pipe %>%
+
 calculate_cvs(scData_hESC) %>%
     plot_mean_variance(colourByBin = FALSE)
 ```

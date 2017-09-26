@@ -7,7 +7,6 @@
     return(do.call(c, correlations))
 }
 
-
 #' Calculate correlations against top window.
 #'
 #' Calculates correlations of each genes in each window against each genes in the top window.
@@ -44,7 +43,8 @@
 #'     define_top_genes(window_size = 2) %>%
 #'     bin_scdata(window_number = 1) %>%
 #'     correlate_windows
-
+#'
+#' @export
 correlate_windows <- function(dataset, n_random = 3, ...){
 
     # extract the top window genes
@@ -58,7 +58,7 @@ correlate_windows <- function(dataset, n_random = 3, ...){
     )
 
     # iterate bins in the dataset
-    corTable <- bind_rows(
+    corTable <- dplyr::bind_rows(
         lapply(
             unique(dataset$bin),
             function(i) {
@@ -67,17 +67,17 @@ correlate_windows <- function(dataset, n_random = 3, ...){
                     dplyr::select(-geneName, -mean, -sd, -cv, -bin) %>%
                     as.matrix
 
-                with_top_window <- data_frame(
+                with_top_window <- tibble::tibble(
                     bin = i,
                     window = "top_window",
                     cor_coef = .correlate_window(top_window, selected_window)
                 )
 
-                with_controls <- bind_rows(
+                with_controls <- dplyr::bind_rows(
                     lapply(
                         seq_len(n_random),
                         function(j) {
-                            data_frame(
+                            tibble::tibble(
                                 bin = i,
                                 window = paste0("shuffled_top_window_", j),
                                 cor_coef = .correlate_window(shuffled_top_windows[[j]], selected_window)
@@ -86,7 +86,7 @@ correlate_windows <- function(dataset, n_random = 3, ...){
                     )
                 )
 
-                return(bind_rows(with_top_window, with_controls))
+                return(dplyr::bind_rows(with_top_window, with_controls))
             }
 
         )

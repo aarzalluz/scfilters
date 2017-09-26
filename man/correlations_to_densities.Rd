@@ -35,4 +35,5 @@ calculate_cvs(expMat) \%>\%
     bin_scdata(window_number = 1) \%>\%
     correlate_windows \%>\%
     correlations_to_densities
+
 }

@@ -24,7 +24,8 @@
 #'     bin_scdata(window_number = 1) %>%
 #'     correlate_windows(n_random = 2) %>%
 #'     get_mean_median
-
+#'
+#' @export
 get_mean_median <- function(df, absolute_cc = TRUE) {
     if (absolute_cc) {
         dplyr::group_by(df, bin, window) %>%

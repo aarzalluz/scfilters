@@ -52,7 +52,8 @@
 #'
 #' calculate_cvs(expMat) %>%
 #'     define_top_genes(mean_expression = 1.5)
-
+#'
+#' @export
 define_top_genes <- function(dataset,
                               window_size = NULL,
                               mean_expression = NULL,
@@ -67,7 +68,7 @@ define_top_genes <- function(dataset,
     if (is.numeric(window_size)){
 
         # sort data by mean expression - original row names are lost
-        sorted_values <- arrange(dataset, desc(mean))
+        sorted_values <- dplyr::arrange(dataset, desc(mean))
         # select the top x genes (x=window size selected)
         divided_data$topgenes <- sorted_values[1:window_size, ]
         # assign bin 0 to the top window
@@ -161,7 +162,8 @@ define_top_genes <- function(dataset,
 #' calculate_cvs(expMat) %>%
 #'     define_top_genes(window_size = 1) %>%
 #'     bin_scdata(window_size = 1)
-
+#'
+#' @export
 bin_scdata <- function(dataset, window_number = NULL, window_size = NULL, verbose = TRUE){
 
     if (is.null(window_number) & is.null(window_size)) stop("Need to provide window_number or window_size.")
@@ -175,7 +177,7 @@ bin_scdata <- function(dataset, window_number = NULL, window_size = NULL, verbos
     } else {
         stop("The second parameter should be numeric.")
     }
-    dataset$restofgenes <- mutate(dataset$restofgenes, bin = windows)
+    dataset$restofgenes <- dplyr::mutate(dataset$restofgenes, bin = windows)
 
     if (verbose) {
         if (is.numeric(window_number)){
@@ -189,6 +191,6 @@ bin_scdata <- function(dataset, window_number = NULL, window_size = NULL, verbos
 
     # bind all the data and correct bin number
     dataset <- dplyr::bind_rows(dataset) %>%
-        dplyr::select(geneName, mean, sd, cv, bin, everything())
+        dplyr::select(geneName, mean, sd, cv, bin, dplyr::everything())
     return(dataset)
 }

@@ -38,7 +38,8 @@
 #' sc_feature_filter(sc_data, print_plots = TRUE)
 #' dev.off()
 #' }
-
+#'
+#' @export
 sc_feature_filter <- function(
     sc_data,
     print_plots = FALSE,

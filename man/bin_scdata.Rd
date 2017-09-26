@@ -57,4 +57,5 @@ calculate_cvs(expMat) \%>\%
 calculate_cvs(expMat) \%>\%
     define_top_genes(window_size = 1) \%>\%
     bin_scdata(window_size = 1)
+
 }

@@ -39,9 +39,9 @@
 #'     bin_scdata(window_number = 1) %>%
 #'     correlate_windows %>%
 #'     correlations_to_densities
-
+#'
+#' @export
 correlations_to_densities <- function(df, n = 64, absolute_cc = TRUE) {
     dplyr::group_by(df, bin, window) %>%
-        dplyr::do(do.call(dplyr::data_frame, .applyDensity(.$cor_coef, n = n, absolute_cc = absolute_cc))) %>%
-        ungroup
+        dplyr::do(do.call(tibble::tibble, .applyDensity(.$cor_coef, n = n, absolute_cc = absolute_cc)))
 }

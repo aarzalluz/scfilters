@@ -33,4 +33,5 @@ calculate_cvs(expMat) \%>\%
     bin_scdata(window_number = 1) \%>\%
     correlate_windows(n_random = 2) \%>\%
     get_mean_median
+
 }

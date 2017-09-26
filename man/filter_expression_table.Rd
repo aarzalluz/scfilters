@@ -34,6 +34,7 @@ myData <- data_frame(
 )
 filter_expression_table(myData, bin_cutoff = 2)
 filter_expression_table(myData, bin_cutoff = 3)
+
 }
 \seealso{
 \code{\link{bin_scdata}}, \code{\link{determine_bin_cutoff}}

@@ -34,7 +34,8 @@
 #' )
 #' calculate_cvs(expMat)
 #' calculate_cvs(expMat, max_zeros = 0.5)
-
+#'
+#' @export
 calculate_cvs <- function(data, max_zeros = 0.75){
 
     if(is.data.frame(data)) {
@@ -60,11 +61,13 @@ calculate_cvs <- function(data, max_zeros = 0.75){
     stdev <- apply(data_final, 1, sd, na.rm = T)
     CV <- stdev/mean
 
-    return(bind_cols(data_frame(
-        geneName = rownames(data_final),
-        mean = mean,
-        sd = stdev,
-        cv = CV),
-        as_data_frame(data_final)
+    return(dplyr::bind_cols(
+        tibble::tibble(
+            geneName = rownames(data_final),
+            mean = mean,
+            sd = stdev,
+            cv = CV
+        ),
+        tibble::as_tibble(data_final)
     ))
 }

@@ -49,4 +49,5 @@ pdf("diagnostic.pdf")
 sc_feature_filter(sc_data, print_plots = TRUE)
 dev.off()
 }
+
 }

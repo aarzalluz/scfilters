@@ -36,6 +36,7 @@ plot_correlations_distributions(corDens)
 metrics <- get_mean_median(corDistrib)
 
 plot_correlations_distributions(corDens, metrics = metrics)
+
 }
 \seealso{
 \code{\link{correlations_to_densities}}, \code{\link{get_mean_median}}

@@ -44,4 +44,5 @@ calculate_cvs(expMat) \%>\%
     define_top_genes(window_size = 2) \%>\%
     bin_scdata(window_number = 1) \%>\%
     correlate_windows
+
 }

@@ -40,6 +40,7 @@ scData_hESC \%>\%
    define_top_genes(window_size = 100) \%>\%
    bin_scdata(window_size = 1000) \%>\%
    plot_mean_variance
+
 }
 \seealso{
 \code{\link{calculate_cvs}}, \code{\link{bin_scdata}}

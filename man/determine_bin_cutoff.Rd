@@ -4,15 +4,16 @@
 \alias{determine_bin_cutoff}
 \title{Determine until when bin of features should be kept based on the metric table}
 \usage{
-determine_bin_cutoff(metric_table, threshold = 2, metric = c("mean",
-  "median", "score"), random_function_summarisation = mean)
+determine_bin_cutoff(metric_table, threshold = 2,
+  selected_metric = c("mean", "median", "score"),
+  random_function_summarisation = mean)
 }
 \arguments{
 \item{metric_table}{A data frame, usually the output of \code{\link{get_mean_median}}.}
 
 \item{threshold}{How many time higher than the background should the last bin be? Default to 2.}
 
-\item{metric}{Which metric to use (i.e. which column from metric_table to work with). Default to \code{mean}.}
+\item{selected_metric}{Which metric to use (i.e. which column from metric_table to work with). Default to \code{mean}.}
 
 \item{random_function_summarisation}{A function used to agregate the randomised control accross bin. Default to \code{mean}.}
 }
@@ -31,12 +32,13 @@ Bins of genes are kept until there mean (or median) correlation coefficient fell
 a threshold value \code{threshold x background level}.
 }
 \examples{
-myData <- data_frame(
+myData <- tibble::tibble(
     bin = rep(c(1, 2, 3), each = 3),
     window = rep(c("top_window", "shuffled_top_window_1", "shuffled_top_window_2"), 3),
     mean = c(0.8, 0.1, 0.11, 0.14, 0.12, 0.09, 0.10, 0.13, 0.08)
 )
 determine_bin_cutoff(myData)
+
 }
 \seealso{
 \code{\link{get_mean_median}}, \code{\link{plot_metric}}

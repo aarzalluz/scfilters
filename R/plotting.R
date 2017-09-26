@@ -32,7 +32,10 @@
 #'    define_top_genes(window_size = 100) %>%
 #'    bin_scdata(window_size = 1000) %>%
 #'    plot_mean_variance
-
+#'
+#' @export
+#' @import ggplot2
+#' @importFrom magrittr "%>%"
 plot_mean_variance <- function(df, density = TRUE, colourByBin = TRUE, density_color = "blue", ...){
     if(colourByBin) {
         pl <- ggplot(df, aes(x = cv, y = mean + 1, colour = factor(bin))) +
@@ -96,7 +99,8 @@ plot_mean_variance <- function(df, density = TRUE, colourByBin = TRUE, density_c
 #' metrics <- get_mean_median(corDistrib)
 #'
 #' plot_correlations_distributions(corDens, metrics = metrics)
-
+#'
+#' @export
 plot_correlations_distributions <- function(df, metrics = NULL, vlines = c("mean", "median" ), facet_ncol = 4) {
 
     vlines <- match.arg(vlines)
@@ -110,10 +114,10 @@ plot_correlations_distributions <- function(df, metrics = NULL, vlines = c("mean
     if (!is.null(metrics)) {
 
         metrics <- dplyr::select_(metrics, "bin", "window", vlines) %>%
-            rename_(metric = vlines) %>%
-            mutate(window = sub("_[0-9]+$", "", window)) %>%
-            group_by(bin, window) %>%
-            summarise(metric = median(abs(metric)))
+            dplyr::rename(metric = !!vlines) %>%
+            dplyr::mutate(window = sub("_[0-9]+$", "", window)) %>%
+            dplyr::group_by(bin, window) %>%
+            dplyr::summarise(metric = median(abs(metric)))
 
         pl <- pl +
             geom_vline(
@@ -131,7 +135,6 @@ plot_correlations_distributions <- function(df, metrics = NULL, vlines = c("mean
     return(pl)
 }
 
-
 #' Produce a bar chart of mean (or median) correlation coefficient per bin of feature.
 #'
 #' Use the output of \code{\link{get_mean_median}} and produce a bar chart of mean
@@ -139,9 +142,9 @@ plot_correlations_distributions <- function(df, metrics = NULL, vlines = c("mean
 #' randomised top window are shown as dot-and-whiskers, and are used to estimate a
 #' background level.
 #'
-#' @param metricsTable A \code{tibble}, usually the output of \code{\link{get_mean_median}}.
+#' @param metric_table A \code{tibble}, usually the output of \code{\link{get_mean_median}}.
 #'
-#' @param metric Which column in \code{metricsTable} to use? Default to \code{mean}.
+#' @param selected_metric Which column in \code{metricsTable} to use? Default to \code{mean}.
 #'
 #' @param show_ctrl A boolean. Should a dashed line indicate the estimated background level?
 #'
@@ -170,10 +173,11 @@ plot_correlations_distributions <- function(df, metrics = NULL, vlines = c("mean
 #'     correlate_windows(n_random = 3) %>%
 #'     get_mean_median %>%
 #'     plot_metric
-
+#'
+#' @export
 plot_metric <- function(
-    metricsTable,
-    metric = c("mean", "median", "score"),
+    metric_table,
+    selected_metric = c("mean", "median", "score"),
     show_ctrl = TRUE,
     control_color = "blue",
     show_threshold = TRUE,
@@ -183,22 +187,23 @@ plot_metric <- function(
     annotate_lines = TRUE
 
 ) {
-    metric <- match.arg(metric)
+    selected_metric <- match.arg(selected_metric)
+    eq_selected_metric <- enquo(selected_metric)
 
-    metricsTable <- data_frame(
-        bin = unique(metricsTable$bin),
-        top_window = dplyr::filter(metricsTable, window == "top_window") %>%
-            dplyr::select_(metric) %>%
+    metricsTable <- tibble::tibble(
+        bin = unique(metric_table$bin),
+        top_window = dplyr::filter(metric_table, window == "top_window") %>%
+            dplyr::select(!!eq_selected_metric) %>%
             unlist,
-        ctrl_window_median = dplyr::filter(metricsTable, window != "top_window") %>%
-            dplyr::rename_(metric = metric) %>%
+        ctrl_window_median = dplyr::filter(metric_table, window != "top_window") %>%
+            dplyr::rename(metric = !!selected_metric) %>%
             dplyr::select(bin, metric) %>%
             dplyr::group_by(bin) %>%
             dplyr::summarise(med = median(metric)) %>%
             dplyr::select(med) %>%
             unlist,
-        ctrl_window_sd = dplyr::filter(metricsTable, window != "top_window") %>%
-            dplyr::rename_(metric = metric) %>%
+        ctrl_window_sd = dplyr::filter(metric_table, window != "top_window") %>%
+            dplyr::rename(metric = !!selected_metric) %>%
             dplyr::select(bin, metric) %>%
             dplyr::group_by(bin) %>%
             dplyr::summarise(med = sd(metric)) %>%
@@ -233,10 +238,13 @@ plot_metric <- function(
     }
 
     p <- p +
-        geom_errorbar(aes(ymin = ctrl_window_median - ctrl_window_sd, ymax = ctrl_window_median + ctrl_window_sd), width = 0.5, color = "gray30") +
+        geom_errorbar(
+            aes(ymin = ctrl_window_median - ctrl_window_sd, ymax = ctrl_window_median + ctrl_window_sd),
+            width = 0.5, color = "gray30"
+        ) +
         geom_point(aes(y = ctrl_window_median), color = "gray30") +
         guides(fill = FALSE) +
-        labs(y = paste0("Correlation coefficient (", metric, ")"))
+        labs(y = paste0("Correlation coefficient (", selected_metric, ")"))
 
     return(p)
 }

@@ -4,15 +4,15 @@
 \alias{plot_metric}
 \title{Produce a bar chart of mean (or median) correlation coefficient per bin of feature.}
 \usage{
-plot_metric(metricsTable, metric = c("mean", "median", "score"),
+plot_metric(metric_table, selected_metric = c("mean", "median", "score"),
   show_ctrl = TRUE, control_color = "blue", show_threshold = TRUE,
   threshold = 2, threshold_color = "red", line_size = 1,
   annotate_lines = TRUE)
 }
 \arguments{
-\item{metricsTable}{A \code{tibble}, usually the output of \code{\link{get_mean_median}}.}
+\item{metric_table}{A \code{tibble}, usually the output of \code{\link{get_mean_median}}.}
 
-\item{metric}{Which column in \code{metricsTable} to use? Default to \code{mean}.}
+\item{selected_metric}{Which column in \code{metricsTable} to use? Default to \code{mean}.}
 
 \item{show_ctrl}{A boolean. Should a dashed line indicate the estimated background level?}
 
@@ -46,6 +46,7 @@ scData_hESC \%>\%
     correlate_windows(n_random = 3) \%>\%
     get_mean_median \%>\%
     plot_metric
+
 }
 \seealso{
 \code{\link{get_mean_median}}
