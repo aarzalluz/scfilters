@@ -1,4 +1,4 @@
-library(scfilters)
+library(scFeatureFilter)
 context("filter expression table")
 
 myData <- data_frame(

@@ -5,10 +5,9 @@ Title: A correlation-based method for quality filtering of single-cell RNAseq
 Version: 0.5.0
 Authors@R: c(
 	person("Angeles", "Arzalluz-Luque", email = "angeles.arzalluz@gmail.com", role = c("aut", "cre")),
-	person("Guillaume", "Devailly", email = "gdevailly@hotmail.com", role = c("aut", "cre")),
+	person("Guillaume", "Devailly", email = "gdevailly@hotmail.com", role = c("aut")),
 	person("Anna", "Mantsoki", email = "gdevailly@hotmail.com", role = c("aut")),
-	person("Anagha", "Joshi", role = c("aut"))
-)
+	person("Anagha", "Joshi", role = c("aut")))
 Description: An R implementation of the correlation-based method developed in
     the Joshi laboratory to analyse and filter processed single-cell RNAseq data. It
     returns a filtered version of the data containing only genes expression values

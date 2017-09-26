@@ -16,7 +16,7 @@ library(dplyr)
 library(ggplot2)
 library(roxygen2)
 
-load_all(pkg = "F:/divers/moi/Roslin/scpackage/scfilters")
+load_all(pkg = "F:/divers/moi/Roslin/scpackage/scFeatureFilter")
 theme_set(theme_bw())
 ```
 

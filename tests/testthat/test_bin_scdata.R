@@ -1,4 +1,4 @@
-library(scfilters)
+library(scFeatureFilter)
 context("bin_scdata")
 
 preinput <- suppressMessages(

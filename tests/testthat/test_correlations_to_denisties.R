@@ -1,4 +1,4 @@
-library(scfilters)
+library(scFeatureFilter)
 context("correlation to density")
 
 myData1 <- data_frame(

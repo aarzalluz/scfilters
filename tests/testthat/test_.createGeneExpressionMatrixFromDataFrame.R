@@ -1,4 +1,4 @@
-library(scfilters)
+library(scFeatureFilter)
 context(".createGeneExpressionMatrixFromDataFrame")
 
 test_that("working with different types:", {

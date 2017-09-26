@@ -1,4 +1,4 @@
-library(scfilters)
+library(scFeatureFilter)
 context("correlate_windows")
 
 topM <- matrix(c(1, 2, 3, 1, 1, 2), byrow = TRUE, ncol = 3)

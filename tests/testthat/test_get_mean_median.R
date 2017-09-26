@@ -1,4 +1,4 @@
-library(scfilters)
+library(scFeatureFilter)
 context("Extract metrics")
 
 myData1 <- data_frame(
