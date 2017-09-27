@@ -41,7 +41,7 @@ It is recommanded to open a graphical device (i.e. through \code{pdf} or \code{p
 to call \code{scFeatureFilter},and then to close the device with \code{dev.off}.
 }
 \examples{
-sc_feature_filter(sc_data)
+sc_feature_filter(scData_hESC)
 
 # with plots
 \dontrun{

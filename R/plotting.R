@@ -1,3 +1,5 @@
+# suppress CHECK annoying handling of NSE
+utils::globalVariables(c("cor_coef", "ctrl_window_sd"))
 #' Produce a mean expression x coefficient of variation scatter plot.
 #'
 #' Use the output of \code{\link{calculate_cvs}} or \code{\link{bin_scdata}} and plot a feature
@@ -23,6 +25,7 @@
 #' @seealso \code{\link{calculate_cvs}}, \code{\link{bin_scdata}}
 #'
 #' @examples
+#' library(magrittr)
 #' scData_hESC %>%
 #'    calculate_cvs %>%
 #'    plot_mean_variance(colourByBin = FALSE)
@@ -65,7 +68,6 @@ plot_mean_variance <- function(df, density = TRUE, colourByBin = TRUE, density_c
 #' Two density lines are drown in each facets:
 #' \itemize{
 #'      \item A thin colored line, the correlations between the bin and the reference top bin of features
-#'
 #'      \item A thicker blue line with grey error area, the correlations between the bin and the \strong{randomized}
 #'      top bin of features. The lines are not shown if \code{n_random = 0} in \code{\link{correlate_windows}}.
 #' }
@@ -85,6 +87,7 @@ plot_mean_variance <- function(df, density = TRUE, colourByBin = TRUE, density_c
 #' @seealso \code{\link{correlations_to_densities}}, \code{\link{get_mean_median}}
 #'
 #' @examples
+#' library(magrittr)
 #' myData <- scData_hESC %>%
 #' calculate_cvs %>%
 #'     define_top_genes(window_size = 100) %>%
@@ -135,6 +138,7 @@ plot_correlations_distributions <- function(df, metrics = NULL, vlines = c("mean
     return(pl)
 }
 
+
 #' Produce a bar chart of mean (or median) correlation coefficient per bin of feature.
 #'
 #' Use the output of \code{\link{get_mean_median}} and produce a bar chart of mean
@@ -166,6 +170,7 @@ plot_correlations_distributions <- function(df, metrics = NULL, vlines = c("mean
 #' @seealso \code{\link{get_mean_median}}
 #'
 #' @examples
+#' library(magrittr)
 #' scData_hESC %>%
 #'     calculate_cvs %>%
 #'     define_top_genes(window_size = 100) %>%

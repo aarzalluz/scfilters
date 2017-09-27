@@ -1,4 +1,5 @@
 library(testthat)
-library(scfilters)
+library(dplyr)
+library(scFeatureFilter)
 
-test_check("scfilters")
+test_check("scFeatureFilter")

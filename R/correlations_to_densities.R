@@ -11,6 +11,8 @@
     ))
 }
 
+# suppress CHECK annoying handling of NSE
+utils::globalVariables(c("window", "."))
 #' Transform the correlation table to density distributions of correlation values
 #'
 #' Takes the output of \code{\link{correlate_windows}} and compute density curves of correlation coefficient
@@ -26,7 +28,8 @@
 #' @return A \code{\link{tibble}} with columns \code{bin}, \code{window}, \code{cor_coef} and \code{density}.
 #'
 #' @examples
-#' #' expMat <- matrix(
+#' library(magrittr)
+#' expMat <- matrix(
 #'     c(1, 1, 5,
 #'       1, 2, 3,
 #'       0, 1, 4,

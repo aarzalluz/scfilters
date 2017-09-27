@@ -24,7 +24,7 @@ Takes a binned expression table (the output of \code{\link{bin_scdata}}), a bin 
 table or matrix.
 }
 \examples{
-myData <- data_frame(
+myData <- tibble::data_frame(
     bin = rep(c(1, 2, 3), each = 3),
     mean = 9:1,
     sd = runif(9),

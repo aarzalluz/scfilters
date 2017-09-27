@@ -22,7 +22,8 @@ Takes the output of \code{\link{correlate_windows}} and compute density curves o
 for each window comparison.
 }
 \examples{
-#' expMat <- matrix(
+library(magrittr)
+expMat <- matrix(
     c(1, 1, 5,
       1, 2, 3,
       0, 1, 4,

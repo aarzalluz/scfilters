@@ -39,6 +39,7 @@ randomised top window are shown as dot-and-whiskers, and are used to estimate a
 background level.
 }
 \examples{
+library(magrittr)
 scData_hESC \%>\%
     calculate_cvs \%>\%
     define_top_genes(window_size = 100) \%>\%

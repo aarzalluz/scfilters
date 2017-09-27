@@ -17,7 +17,7 @@
 #' @seealso \code{\link{bin_scdata}}, \code{\link{determine_bin_cutoff}}
 #'
 #' @examples
-#' myData <- data_frame(
+#' myData <- tibble::data_frame(
 #'     bin = rep(c(1, 2, 3), each = 3),
 #'     mean = 9:1,
 #'     sd = runif(9),

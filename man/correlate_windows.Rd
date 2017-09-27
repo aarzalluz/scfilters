@@ -32,6 +32,7 @@ This function:
 The input of this function is usually the output of the \code{\link{bin_scdata}} function.
 }
 \examples{
+library(magrittr)
 expMat <- matrix(
     c(1, 1, 5,
       1, 2, 3,

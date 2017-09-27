@@ -50,6 +50,7 @@ to prevent excessively long computation time as well as to preserve the quality 
 analysis, as the top window should only include a subset of reliable values.
 }
 \examples{
+library(magrittr)
 expMat <- matrix(
     c(1, 1, 1,
       1, 2, 3,

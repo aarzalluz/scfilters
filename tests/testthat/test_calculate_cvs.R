@@ -1,4 +1,3 @@
-library(scFeatureFilter)
 context("calculate_cvs")
 
 myDF1 <- data.frame(gene = letters[1:6], x1 = 0:5, x2 = c(0, 5:1), stringsAsFactors = TRUE )

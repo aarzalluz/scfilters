@@ -39,6 +39,7 @@
 #' the rest of the genes.
 #'
 #' @examples
+#' library(magrittr)
 #' expMat <- matrix(
 #'     c(1, 1, 1,
 #'       1, 2, 3,
@@ -54,6 +55,7 @@
 #'     define_top_genes(mean_expression = 1.5)
 #'
 #' @export
+#' @importFrom stats cor density median sd
 define_top_genes <- function(dataset,
                               window_size = NULL,
                               mean_expression = NULL,
@@ -68,7 +70,7 @@ define_top_genes <- function(dataset,
     if (is.numeric(window_size)){
 
         # sort data by mean expression - original row names are lost
-        sorted_values <- dplyr::arrange(dataset, desc(mean))
+        sorted_values <- dplyr::arrange(dataset, dplyr::desc(mean))
         # select the top x genes (x=window size selected)
         divided_data$topgenes <- sorted_values[1:window_size, ]
         # assign bin 0 to the top window
@@ -114,6 +116,8 @@ define_top_genes <- function(dataset,
     return(divided_data)
 }
 
+# suppress CHECK annoying handling of NSE
+utils::globalVariables(c("geneName", "cv", "bin"))
 #' Bin genes by mean expression.
 #'
 #' Divides the genes that were not included in the top window in windows of the same size with decreasing
@@ -144,9 +148,13 @@ define_top_genes <- function(dataset,
 #' @param window_size An integer, indicating the number of genes to be included
 #'  in each window. Ignored if \code{window_size} is defined.
 #'
+#' @param verbose A boolean. Should the function print a message about window size
+#' or the number of windows created?
+#'
 #' @return A data frame containing the binned genes.
 #'
 #' @examples
+#' library(magrittr)
 #' expMat <- matrix(
 #'     c(1, 1, 1,
 #'       1, 2, 3,
@@ -170,7 +178,7 @@ bin_scdata <- function(dataset, window_number = NULL, window_size = NULL, verbos
 
     if (is.numeric(window_number)){
         # bin into the selected number of windows
-        windows <- ntile(desc(dataset[[2]]$mean), window_number) + 1
+        windows <- dplyr::ntile(dplyr::desc(dataset[[2]]$mean), window_number) + 1
     } else if (is.numeric(window_size)){
         # calculate number of windows of selected window size possible and bin
         windows <- dplyr::ntile(dplyr::desc(dataset[[2]]$mean), trunc(nrow(dataset$restofgenes)/window_size)) + 1

@@ -1,3 +1,5 @@
+# suppress CHECK annoying handling of NSE
+utils::globalVariables(c("window", "metric", "med", "top_window", "ctrl_window_median"))
 #' Determine until when bin of features should be kept based on the metric table
 #'
 #' Takes the output of \code{\link{get_mean_median}} and decide until which window to keep

@@ -1,4 +1,3 @@
-library(scFeatureFilter)
 context("define_top_genes")
 
 myDF1 <- data.frame(gene = letters[1:6],

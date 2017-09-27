@@ -16,6 +16,9 @@ of \code{define_top_genes}}
 
 \item{window_size}{An integer, indicating the number of genes to be included
 in each window. Ignored if \code{window_size} is defined.}
+
+\item{verbose}{A boolean. Should the function print a message about window size
+or the number of windows created?}
 }
 \value{
 A data frame containing the binned genes.
@@ -42,6 +45,7 @@ together in a data frame and returned. The output contains a new column \code{bi
 which indicates the window number assigned to each gene.
 }
 \examples{
+library(magrittr)
 expMat <- matrix(
     c(1, 1, 1,
       1, 2, 3,

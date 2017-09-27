@@ -30,7 +30,7 @@
 #' containing only the tope expressed features.
 #'
 #' @examples
-#' sc_feature_filter(sc_data)
+#' sc_feature_filter(scData_hESC)
 #'
 #' # with plots
 #' \dontrun{

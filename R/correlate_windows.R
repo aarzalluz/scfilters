@@ -31,6 +31,7 @@
 #' @return A \code{tibble} containing correlation values.
 #'
 #' @examples
+#' library(magrittr)
 #' expMat <- matrix(
 #'     c(1, 1, 5,
 #'       1, 2, 3,

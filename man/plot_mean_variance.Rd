@@ -31,6 +31,7 @@ Optionally, colours each dot according to the defined bins of features.
 Optionally, adds a density2d geom.
 }
 \examples{
+library(magrittr)
 scData_hESC \%>\%
    calculate_cvs \%>\%
    plot_mean_variance(colourByBin = FALSE)

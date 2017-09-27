@@ -21,7 +21,18 @@ of the correlation coeficient distributions? Ignored if \code{metrics} is \code{
 \value{
 A ggplot2 plot.
 }
+\description{
+Feature by feature correlation values between every windows and the reference to window
+of features are visualized as density lines, one facet per comparison.
+Two density lines are drown in each facets:
+\itemize{
+     \item A thin colored line, the correlations between the bin and the reference top bin of features
+     \item A thicker blue line with grey error area, the correlations between the bin and the \strong{randomized}
+     top bin of features. The lines are not shown if \code{n_random = 0} in \code{\link{correlate_windows}}.
+}
+}
 \examples{
+library(magrittr)
 myData <- scData_hESC \%>\%
 calculate_cvs \%>\%
     define_top_genes(window_size = 100) \%>\%
