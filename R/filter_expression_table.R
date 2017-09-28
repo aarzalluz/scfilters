@@ -41,6 +41,7 @@ filter_expression_table <- function(bined_table, bin_cutoff, as_matrix = FALSE) 
         geneName <- bined_table$geneName
         bined_table <- dplyr::select(bined_table, -geneName) %>%
             as.matrix
+        rownames(bined_table) <- geneName
     }
 
     return(bined_table)

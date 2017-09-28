@@ -4,14 +4,18 @@
 \alias{calculate_cvs}
 \title{Compute mean expression levels, standard deviations and coefficients of variation of each feature.}
 \usage{
-calculate_cvs(data, max_zeros = 0.75)
+calculate_cvs(data, max_zeros = 0.75, sce_assay = NULL)
 }
 \arguments{
-\item{data}{A data frame or a matrix, containing expression values for each gene as rows, and
+\item{data}{A data frame, a matrix or a \code{SingleCellExperiment} object.
+If data frame or matrix, it should contain expression values for each gene as rows, and
 expression values for the cells as columns.}
 
 \item{max_zeros}{A number between 0 and 1 indicating the maximum proportion of zero expression values
 allowed per row. Features with a higher proportion of 0 will be discarded.}
+
+\item{sce_assay, }{if \code{data} is an \code{SingleCellExperiment} object,
+\code{sce_assay} should be one of \code{names(assays(<SingleCellExperiment>))}.}
 }
 \value{
 A data frame, containing the filtered data with additional columns: mean, standard deviation and cv

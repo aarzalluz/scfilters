@@ -5,10 +5,12 @@
 \title{Filter scRNA-seq expression matrix to keep only highly informative features. Integrated pipeline.}
 \usage{
 sc_feature_filter(sc_data, print_plots = FALSE, max_zeros = 0.75,
-  threshold = 2, top_window_size = 100, other_window_size = 1000)
+  threshold = 2, top_window_size = 100, other_window_size = 1000,
+  sce_assay = NULL)
 }
 \arguments{
-\item{sc_data}{A data frame or a matrix, containing expression values for each gene as rows, and
+\item{sc_data}{A data frame, a matrix or a \code{SingleCellExperiment} object.
+If data frame or matrix, it should contain expression values for each gene as rows, and
 expression values for the cells as columns.}
 
 \item{print_plots}{A boolean. Should the function produce three plots as a side effect?
@@ -24,6 +26,9 @@ will be. See \code{\link{determine_bin_cutoff}}.}
 \item{top_window_size}{Size of the reference bin. See \code{\link{define_top_genes}}}
 
 \item{other_window_size}{Size of the other bins of feature. See \code{\link{bin_scdata}}}
+
+\item{sce_assay, }{if \code{sc_data} is an \code{SingleCellExperiment} object,
+\code{sce_assay} should be one of \code{names(assays(<SingleCellExperiment>))}.}
 }
 \value{
 A \code{matrix} or a \code{tibble}, depending on the type of \code{sc_data},

@@ -15,11 +15,15 @@
 #' In the output, mean, standard deviation and CV are incorporated as new columns in the data
 #' frame, named \code{mean}, \code{sd} and \code{cv}.
 #'
-#' @param data A data frame or a matrix, containing expression values for each gene as rows, and
+#' @param data A data frame, a matrix or a \code{SingleCellExperiment} object.
+#' If data frame or matrix, it should contain expression values for each gene as rows, and
 #' expression values for the cells as columns.
 #'
 #' @param max_zeros A number between 0 and 1 indicating the maximum proportion of zero expression values
 #' allowed per row. Features with a higher proportion of 0 will be discarded.
+#'
+#' @param sce_assay, if \code{data} is an \code{SingleCellExperiment} object,
+#' \code{sce_assay} should be one of \code{names(assays(<SingleCellExperiment>))}.
 #'
 #' @return A data frame, containing the filtered data with additional columns: mean, standard deviation and cv
 #' values for each row.
@@ -36,10 +40,17 @@
 #' calculate_cvs(expMat, max_zeros = 0.5)
 #'
 #' @export
-calculate_cvs <- function(data, max_zeros = 0.75){
+calculate_cvs <- function(data, max_zeros = 0.75, sce_assay = NULL){
 
     if(is.data.frame(data)) {
         data <- .createGeneExpressionMatrixFromDataFrame(data)
+    } else if (suppressWarnings(requireNamespace("SingleCellExperiment")) &&
+               methods::is(data, "SingleCellExperiment")) {
+        if(is.null(sce_assay)) {
+            stop("sce_assay needs to be specified for SingleCellExperiment objects.
+                 \nShould be one of names(assays(<SingleCellExperiment>))")
+        }
+        data <- SummarizedExperiment::assay(data, sce_assay)
     }
 
     # look for negative expression values

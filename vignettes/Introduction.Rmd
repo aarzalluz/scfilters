@@ -67,8 +67,13 @@ sc_feature_filter(scData_hESC)
 
 # Detailed usage
 ## Loading data
-*scFeatureFilter* need an expression matrix either as a `matrix`, a `data.frame` or a `tibble` R object.
+*scFeatureFilter* need an expression matrix either as a `matrix`, a `data.frame`, a `tibble` or a
+`SingleCellExperiment` R object.
 Features should be in rows, while cells should be in columns. 
+
+We recommend to provide expression values that were normalised to correct from
+library size, for example TPM or FPKM, rather than raw counts.
+
 Support of Bioconductor's expression set objects will arrive shortly.
 An example dataset is supplied with the package:
 ```{r}
@@ -205,3 +210,26 @@ filtered_data
 
 *Note: most of the features are filtered at the `calculate_cvs` step because they have a too high
 fraction of 0 expression (maximum fraction of 0 expression is 75% by default).*
+
+## Working with SingleCellExperiment objects
+This package accpets `SingleCellExperiment` as inputs for `sc_feature_filter`
+and `calculate_cvs` functions. However it does not retun such objects at the moment.
+One can retrieve a filtered `SingleCellExperiment` objects like this:
+```{r}
+library(SingleCellExperiment)
+library(scRNAseq) # example datasets
+data("allen")
+sce_allen <- as(allen, "SingleCellExperiment")
+
+# sce_allen is an SingleCellExperiment object
+sce_allen
+
+filtered_allen <- sc_feature_filter(sce_allen, sce_assay = "rsem_tpm")
+is.matrix(filtered_allen) # filtered_allen is a tibble
+
+sce_filtered_allen <- sce_allen[rownames(filtered_allen), ]
+sce_filtered_allen
+```
+
+
+

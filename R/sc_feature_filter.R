@@ -9,7 +9,8 @@
 #' It is recommended to open a graphical device (i.e. through \code{pdf} or \code{png}),
 #' to call \code{scFeatureFilter},and then to close the device with \code{dev.off}.
 #'
-#' @param sc_data A data frame or a matrix, containing expression values for each gene as rows, and
+#' @param sc_data A data frame, a matrix or a \code{SingleCellExperiment} object.
+#' If data frame or matrix, it should contain expression values for each gene as rows, and
 #' expression values for the cells as columns.
 #'
 #' @param print_plots A boolean. Should the function produce three plots as a side effect?
@@ -25,6 +26,9 @@
 #' @param top_window_size Size of the reference bin. See \code{\link{define_top_genes}}
 #'
 #' @param other_window_size Size of the other bins of feature. See \code{\link{bin_scdata}}
+#'
+#' @param sce_assay, if \code{sc_data} is an \code{SingleCellExperiment} object,
+#' \code{sce_assay} should be one of \code{names(assays(<SingleCellExperiment>))}.
 #'
 #' @return A \code{matrix} or a \code{tibble}, depending on the type of \code{sc_data},
 #' containing only the top expressed features.
@@ -46,10 +50,11 @@ sc_feature_filter <- function(
     max_zeros = 0.75,
     threshold = 2,
     top_window_size = 100,
-    other_window_size = 1000
+    other_window_size = 1000,
+    sce_assay = NULL
 ){
     binned_data <- sc_data %>%
-        calculate_cvs(max_zeros = max_zeros) %>%
+        calculate_cvs(max_zeros = max_zeros, sce_assay = sce_assay) %>%
         define_top_genes(window_size = top_window_size) %>%
         bin_scdata(window_size = other_window_size)
 
@@ -57,10 +62,10 @@ sc_feature_filter <- function(
 
     metrics <- get_mean_median(cor_dis)
 
-    if(is.matrix(sc_data)) {
-        is_matrix <- TRUE
-    } else {
+    if(is.data.frame(sc_data)) {
         is_matrix <- FALSE
+    } else {
+        is_matrix <- TRUE
     }
 
     filtered_data <- filter_expression_table(
