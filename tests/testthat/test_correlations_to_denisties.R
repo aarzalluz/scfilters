@@ -1,12 +1,12 @@
 context("correlation to density")
 
-myData1 <- data_frame(
+myData1 <- tibble::tibble(
     bin = rep(c(1, 2), each = 4),
     window = "top_window",
     cor_coef = c(1, 1, 1, 1, 0, 0, 1, 1)
 )
 
-myData2 <- data_frame(
+myData2 <- tibble::tibble(
     bin = rep(1, each = 3),
     window = "top_window",
     cor_coef = c(-0.5, 0.5, 1)

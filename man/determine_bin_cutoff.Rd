@@ -13,9 +13,11 @@ determine_bin_cutoff(metric_table, threshold = 2,
 
 \item{threshold}{How many time higher than the background should the last bin be? Default to 2.}
 
-\item{selected_metric}{Which metric to use (i.e. which column from metric_table to work with). Default to \code{mean}.}
+\item{selected_metric}{Which metric to use (i.e. which column from metric_table to work with).
+Default to \code{mean}.}
 
-\item{random_function_summarisation}{A function used to agregate the randomised control accross bin. Default to \code{mean}.}
+\item{random_function_summarisation}{A function used to aggregate the randomised control across
+bin. Default to \code{mean}.}
 }
 \value{
 A number, the first bin of features to discard.

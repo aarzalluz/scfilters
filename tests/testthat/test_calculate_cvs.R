@@ -3,9 +3,9 @@ context("calculate_cvs")
 myDF1 <- data.frame(gene = letters[1:6], x1 = 0:5, x2 = c(0, 5:1), stringsAsFactors = TRUE )
 myDF2 <- data.frame(gene = letters[1:6], x1 = 0:5, x2 = c(0, 5:1), stringsAsFactors = FALSE)
 myMatrix <- matrix(c(0:5, 0, 5:1), ncol = 2, dimnames = list(letters[1:6], c("x1", "x2")))
-myTibble <- data_frame(gene = letters[1:6], x1 = 0:5, x2 = c(0, 5:1))
+myTibble <- tibble::tibble(gene = letters[1:6], x1 = 0:5, x2 = c(0, 5:1))
 
-result <- data_frame(
+result <- tibble::tibble(
     geneName = letters[2:6],
     mean = rep(3, 5),
     sd = c(sd(c(1, 5)), sd(c(2, 4)), 0, sd(c(2, 4)), sd(c(1, 5))),

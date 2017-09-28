@@ -14,7 +14,7 @@ plot_correlations_distributions(df, metrics = NULL, vlines = c("mean",
 mean or median of the correlation coefficient distributions.}
 
 \item{vlines}{A string, either "mean" or "median". Should the dashed line represent the mean or the median
-of the correlation coeficient distributions? Ignored if \code{metrics} is \code{NULL}.}
+of the correlation coefficient distributions? Ignored if \code{metrics} is \code{NULL}.}
 
 \item{facet_ncol}{In how many columns should the plots be arranged.}
 }

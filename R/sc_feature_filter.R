@@ -6,7 +6,7 @@
 #' (see the vignette for details on the method).
 #'
 #' The function can optionally produce three plots of \code{print_plots} is \code{TRUE}.
-#' It is recommanded to open a graphical device (i.e. through \code{pdf} or \code{png}),
+#' It is recommended to open a graphical device (i.e. through \code{pdf} or \code{png}),
 #' to call \code{scFeatureFilter},and then to close the device with \code{dev.off}.
 #'
 #' @param sc_data A data frame or a matrix, containing expression values for each gene as rows, and
@@ -27,7 +27,7 @@
 #' @param other_window_size Size of the other bins of feature. See \code{\link{bin_scdata}}
 #'
 #' @return A \code{matrix} or a \code{tibble}, depending on the type of \code{sc_data},
-#' containing only the tope expressed features.
+#' containing only the top expressed features.
 #'
 #' @examples
 #' sc_feature_filter(scData_hESC)

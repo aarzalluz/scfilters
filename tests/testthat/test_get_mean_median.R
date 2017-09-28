@@ -1,12 +1,12 @@
 context("Extract metrics")
 
-myData1 <- data_frame(
+myData1 <- tibble::tibble(
     bin = rep(c(1, 1, 2), each = 3),
     window = rep(c("top_window", "shuffled_top_window_1", "top_window"), each = 3),
     cor_coef = c(0, 0.5, 1, 0, 0.6, 1, 0, 0.7, 1)
 )
 
-expectedTbl <- data_frame(
+expectedTbl <- tibble::tibble(
     bin = c(1, 1, 2),
     window = c("shuffled_top_window_1", "top_window", "top_window"),
     mean = c(1.6/3, 0.5, 1.7/3),

@@ -27,7 +27,7 @@ will be. See \code{\link{determine_bin_cutoff}}.}
 }
 \value{
 A \code{matrix} or a \code{tibble}, depending on the type of \code{sc_data},
-containing only the tope expressed features.
+containing only the top expressed features.
 }
 \description{
 This pipeline function takes an expression matrix as an input and filter it to
@@ -37,7 +37,7 @@ correlations with a reference bin constituted of the very most expressed feature
 }
 \details{
 The function can optionally produce three plots of \code{print_plots} is \code{TRUE}.
-It is recommanded to open a graphical device (i.e. through \code{pdf} or \code{png}),
+It is recommended to open a graphical device (i.e. through \code{pdf} or \code{png}),
 to call \code{scFeatureFilter},and then to close the device with \code{dev.off}.
 }
 \examples{

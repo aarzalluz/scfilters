@@ -33,7 +33,7 @@ test_that("working with different types:", {
     )
     expect_equal(
         .createGeneExpressionMatrixFromDataFrame(
-            data_frame(b = 1:5)
+            tibble::tibble(b = 1:5)
         ),
         matrix(1:5, dimnames = list(NULL, "b"))
     )

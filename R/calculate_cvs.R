@@ -57,8 +57,8 @@ calculate_cvs <- function(data, max_zeros = 0.75){
     data_final <- subset(data, (rowSums(data == 0) / ncol(data)) <= max_zeros)
 
     # calculate mean, st dev and cv of rows
-    mean <- rowMeans(data_final, na.rm = T)
-    stdev <- apply(data_final, 1, sd, na.rm = T)
+    mean <- rowMeans(data_final, na.rm = TRUE)
+    stdev <- apply(data_final, 1, sd, na.rm = TRUE)
     CV <- stdev/mean
 
     return(dplyr::bind_cols(

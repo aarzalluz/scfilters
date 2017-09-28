@@ -78,7 +78,7 @@ plot_mean_variance <- function(df, density = TRUE, colourByBin = TRUE, density_c
 #' mean or median of the correlation coefficient distributions.
 #'
 #' @param vlines A string, either "mean" or "median". Should the dashed line represent the mean or the median
-#' of the correlation coeficient distributions? Ignored if \code{metrics} is \code{NULL}.
+#' of the correlation coefficient distributions? Ignored if \code{metrics} is \code{NULL}.
 #'
 #' @param facet_ncol In how many columns should the plots be arranged.
 #'
@@ -109,10 +109,12 @@ plot_correlations_distributions <- function(df, metrics = NULL, vlines = c("mean
     vlines <- match.arg(vlines)
 
     pl <- ggplot() +
-        geom_smooth(data = dplyr::filter(df, window != "top_window"), aes(x = cor_coef, y = density), span = 0.8) +
-        geom_line(  data = dplyr::filter(df, window == "top_window"), aes(x = cor_coef, y = density, color = factor(bin))) +
+        geom_smooth(data = dplyr::filter(df, window != "top_window"),
+                    aes(x = cor_coef, y = density), span = 0.8) +
+        geom_line(  data = dplyr::filter(df, window == "top_window"),
+                    aes(x = cor_coef, y = density, color = factor(bin))) +
         facet_wrap(~bin, labeller = "label_both", ncol = facet_ncol) +
-        labs(x = "correlation coeficient") +
+        labs(x = "correlation coefficient") +
         guides(color = FALSE)
     if (!is.null(metrics)) {
 

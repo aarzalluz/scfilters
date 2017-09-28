@@ -15,9 +15,11 @@ utils::globalVariables(c("window", "metric", "med", "top_window", "ctrl_window_m
 #'
 #' @param threshold How many time higher than the background should the last bin be? Default to 2.
 #'
-#' @param selected_metric Which metric to use (i.e. which column from metric_table to work with). Default to \code{mean}.
+#' @param selected_metric Which metric to use (i.e. which column from metric_table to work with).
+#'  Default to \code{mean}.
 #'
-#' @param random_function_summarisation A function used to agregate the randomised control accross bin. Default to \code{mean}.
+#' @param random_function_summarisation A function used to aggregate the randomised control across
+#'  bin. Default to \code{mean}.
 #'
 #' @return A number, the first bin of features to discard.
 #'

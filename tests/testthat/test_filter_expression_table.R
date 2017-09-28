@@ -1,6 +1,6 @@
 context("filter expression table")
 
-myData <- data_frame(
+myData <- tibble::tibble(
     bin = rep(c(1, 2, 3), each = 3),
     mean = 9:1,
     sd = runif(9),

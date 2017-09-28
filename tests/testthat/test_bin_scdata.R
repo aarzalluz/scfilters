@@ -10,7 +10,7 @@ preinput <- suppressMessages(
 input <- suppressMessages(define_top_genes(preinput, window_size = 2))
 result <- dplyr::arrange(preinput, desc(mean)) %>%
     dplyr::mutate(bin = rep(seq(1.0, 3.0, by = 1.0), each = 2)) %>%
-    dplyr::select(geneName, mean, sd, cv, bin, everything())
+    dplyr::select(geneName, mean, sd, cv, bin, dplyr::everything())
 
 test_that("Giving the expected result", {
     expect_equal(
