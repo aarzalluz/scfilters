@@ -13,7 +13,7 @@ vignette: >
 ## Package aim
 One early step of single cell RNA-seq analysis is the filtering of features (i.e. genes or transcripts)
 to retain only the most expressed ones. This allows to focus on features less affected by technical
-variations (relatively), and often increases the realiability of the subsequent analyses.
+variations (relatively), and often increases the statistical power of the subsequent analyses.
 
 This step is usually done by applying one or more arbitrary thresholds (i.e. mean TPM > 1, retention of features 
 frequently detected across cells, etc.), or by using data from spike-in RNA.
