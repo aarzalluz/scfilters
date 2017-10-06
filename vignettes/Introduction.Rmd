@@ -50,9 +50,8 @@ Once installed, the package is ready to be loaded:
 ```{r}
 library(scFeatureFilter)
 
-# we then edit the plot theme
 library(ggplot2)
-theme_set(theme_bw())
+library(cowplot) # multipanel figures + nice theme
 ```
 
 
@@ -75,8 +74,10 @@ sc_feature_filter(scData_hESC)
 `SingleCellExperiment` R object) as input. Support of Bioconductor's expression set objects will arrive shortly.
 Note that features should be in rows, while cells should be in columns. 
 
-We recommend to provide normalized expression values where at least library size is accounted for, 
+
+We recommend providing normalized expression values where at least library size is accounted for, 
 such as TPM or FPKM, rather than raw counts.
+
 
 An example dataset is supplied with the package:
 ```{r}
@@ -147,8 +148,9 @@ plot_correlations_distributions(corDens, facet_ncol = 5)
 
 The coloured lines indicate the correlation coefficient distributions for each bin compared to 
 the reference bin (bin 1 shows the autocorrelation of the reference bin). The thicker blue 
-lines with grey area (barely visible) represent the correlation coefficient distributions for
+lines with grey area (barely visible) represents the correlation coefficient distributions for
 each bin compared to the randomized control bins.
+
 
 Notice how the correlation distributions shift from high to low values as the bin number increases,
 i.e. as the  mean expression level of the features decreases, indicating a higher influence of 
@@ -222,6 +224,7 @@ filtered_data
 The maximum fraction of 0 expression tolerated by scFeatureFilter is 75%, by default.*
 
 ## Working with SingleCellExperiment objects
+
 This package accpets `SingleCellExperiment` as inputs for `sc_feature_filter`
 and `calculate_cvs` functions. However, it does not retun such objects at the moment.
 One can retrieve a filtered `SingleCellExperiment` objects like this:
@@ -241,5 +244,81 @@ sce_filtered_allen <- sce_allen[rownames(filtered_allen), ]
 sce_filtered_allen
 ```
 
+# Parameter values
+Several parameters are used in `sc_feature_filter` or in step-by-step functions.
+Their default values should be fine for eukaryote species with multi-exonic
+genes (metazoans & plants).
+
+## `max_zeros`
+The `max_zeros` parameter default value `0.75`) is used as a first filter.
+Features with more than this proportion of cells with 0 expression will be
+removed. 0 expression can reflect both an absence of expression in the cell
+of origin, or a drop-out event during the library preparation. This technical
+drop out can be quite high in scRNAseq protocols. More stringent values for
+this parameter could be `0.5` or `0.25`. As features with many 0-expression
+events are usually lowly expressed in other cells, this parameter will 
+mostly impact the number of bins in the rest of the method,
+adding or removing lowly expressed bins of features.
 
 
+## `top_window_size`
+The `top_window_size` parameter (default to `100`) can have significant impacts
+on the rest of the pipeline. It is the number of feature with the highest mean
+expression that will be used as a reference bin. If the reference window is too
+small (i.e. `10`), it will not capture enough of the biological variation.
+On the contrary, a too large window (i.e. `2000`) might include to many features
+highly affected from technical variations to be of any use. We therefore suggest
+keeping it at `100` or near that value.
+
+The function `plot_top_window_autocor` can be used to visualy explore the mean
+auto-correlation value of features in the top bin with themselves depending on
+the number of features in the top bin:
+```{r}
+plot_top_window_autocor(calculate_cvs(scData_hESC))
+```
+
+
+## `other_window_size`
+The `other_window_size` parameter (default to `1000`) is the number of 
+features included in the other bins of feature. It can safely be decreased to
+`500` or `250`, which will result in more bins, without changing much the
+proposed filtering threshold:
+```{r}
+metrics_bigBins <- scData_hESC %>%
+    calculate_cvs %>%
+    define_top_genes(window_size = 100) %>%
+    bin_scdata(window_size = 1000) %>%
+    correlate_windows(n_random = 3) %>%
+    get_mean_median
+
+metrics_smallBins <- scData_hESC %>%
+    calculate_cvs %>%
+    define_top_genes(window_size = 100) %>%
+    bin_scdata(window_size = 500) %>%
+    correlate_windows(n_random = 3) %>%
+    get_mean_median
+
+plot_grid(
+    plot_metric(metrics_bigBins) +
+        labs(title = "1000 genes per bin"),
+    plot_metric(metrics_smallBins) +
+        labs(title = "500 genes per bin")
+)
+
+```
+
+## `n_random`
+The background correlation values used to determine a threshold come from
+shuffling of the values in the top bin expression matrices. `n_random`
+(default to 3) is the control bins that will be generated. Result difference
+between the different random windows are small, there is not much need to
+increase that value. Increasing it a lot will increase computation time.
+
+## `threshold`
+One can decide which bin of features one want to keep looking at the
+`plot_metric` or `plot_correlations_distributions` plots.
+We also provide an automatic threshold decision, keeping only windows of
+feature with a mean correlation value with the top window higher than 
+`threshold` (default to 2) times the background level, estimated using 
+randomised top bins. Depending on the downstream applications, one
+can increase the `threshold` value to be more stringent in the selection.

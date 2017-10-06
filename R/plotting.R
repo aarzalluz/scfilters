@@ -18,7 +18,7 @@ utils::globalVariables(c("cor_coef", "ctrl_window_sd"))
 #'
 #' @param density_color Colour of the density2d curves.
 #'
-#' @param ... Further arguments are passed to \code{geom_point}.
+#' @param ... Further arguments are passed to \code{geom_point} such as \code{size}.
 #'
 #' @return A ggplot2 plot.
 #'

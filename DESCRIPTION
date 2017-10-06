@@ -21,6 +21,6 @@ RoxygenNote: 6.0.1
 Suggests: testthat,
     knitr,
     rmarkdown,
-    SingleCellExperiment, SummarizedExperiment, scRNAseq
+    SingleCellExperiment, SummarizedExperiment, scRNAseq, cowplot
 VignetteBuilder: knitr
 biocViews: SingleCell, RNASeq, Preprocessing, GeneExpression
