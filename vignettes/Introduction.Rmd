@@ -1,6 +1,6 @@
 ---
 title: "Introduction to the scFeatureFilter package"
-author: "Vignette Authors"
+author: "Angeles Arzalluz-Luque, Guillaume Devailly, Anna Mantsoki, Anagha Joshi"
 date: "`r Sys.Date()`"
 output: BiocStyle::html_document
 vignette: >
@@ -11,32 +11,39 @@ vignette: >
 
 # Preamble
 ## Package aim
-One early step of single cell RNA-seq analysis is the filtering of features (i.e. genes or transcripts)
+One of the steps in single cell RNA-seq analysis is the filtering of features (i.e. genes or transcripts)
 to retain only the most expressed ones. This allows to focus on features less affected by technical
 variations (relatively), and often increases the statistical power of the subsequent analyses.
 
-This step is usually done by applying one or more arbitrary thresholds (i.e. mean TPM > 1, retention of features 
-frequently detected across cells, etc.), or by using data from spike-in RNA.
-This package aims to inform that threshold decision, especially in the cases
+This step is usually done by applying one or more arbitrary thresholds
+(i.e. mean TPM > 1, retention of features 
+frequently detected across cells, etc.), or by using the data from spike-in RNA.
+This package aims to help the threshold decision, especially 
 when spike-in controls are not available.
 
 ## Method summary
-Highly expressed features are less affected by technical variability that lowly expressed ones,
+Highly expressed features are less affected by technical variability than lowly expressed ones,
 and thus capture biological information more successfully.
-We propose to use this property to set a small bin of highly expressed features as a reference to 
-estimate the relative decrease in the biological variation component across the results. Namely, we
-aim to evaluate the strength of the reference correlation to bins of features of decreasing expression.
-In this scenario, it is expected that features from major transcription programs will be correlated 
-with each other across bins, unless the technical variation component dominates the expression results.
+We propose to use highly expressed features as a reference to 
+to estimate the drowning of biological variation in bins 
+of features of decreasing expression. 
+In this scenario, it is expected that features from major transcription programs
+will be correlated with each other across bins, unless the technical variation 
+component dominates the expression results.
 
-One of the package's first steps is to select this reference bin of features (or 'top window' of features).
-We propose to use the 100 features with the highest mean expression across cells, and a reasonably low
-fraction of 0 expression as reference. Using more features will dilute the amount of biological variation
-reflected in this reference bin (as well as increase computation time), while using less features might 
+One of the package's first steps is to select this reference bin of features 
+(or 'top window' of features).
+We propose to use the 100 features with the highest mean expression
+across cells, and a reasonably low
+fraction of drop-outs (zero-expression values) as reference.
+Using more features will increase the noise in the biological variation
+reflected in this reference bin (as well as increase computation time),
+while using less features might 
 result in insufficient capture of the biological complexity of the samples.
-Subsequent bins of features of decreasing mean expression across cells are then defined (by default, 1000 features
-per bin). Note that the size of the subsequent feature bins matters much less than the size of the
-reference bin.
+Subsequent bins of features of decreasing mean expression across cells are
+then defined (by default, 1000 features
+per bin). Note that the size of the subsequent feature bins matters less
+than the size of the reference bin.
 
 For comparison, several negative control bins are defined by randomly shuffling values of the top bin expression matrix,
 building a window that is expected to be completely uncorrelated. Then, every feature in each bin is correlated 
@@ -93,7 +100,7 @@ calculate_cvs(scData_hESC)
 ```
 
 We can explore the mean - variance relationship of the dataset with the `plot_mean_variance` function:
-```{r collapse=TRUE}
+```{r, collapse=TRUE}
 library(magrittr) # to use the pipe %>%
 
 calculate_cvs(scData_hESC) %>%
@@ -102,7 +109,7 @@ calculate_cvs(scData_hESC) %>%
 
 The top window (or reference bin) is then defined with the `define_top_genes` function, while the rest of bins
 are created with the `bin_scdata` function:
-```{r collapse=TRUE}
+```{r, collapse=TRUE}
 scData_hESC %>%
     calculate_cvs %>%
     define_top_genes(window_size = 100) %>%
@@ -131,7 +138,7 @@ myPlot + annotation_logticks(sides = "l")
 After binning the data, correlations can be calculated. Every feature in each window is correlated 
 to every other feature in the reference bin (as well as in the randomized control bins) using the 
 function `correlate_windows`:
-```{r collapse=TRUE}
+```{r, collapse=TRUE}
 corDistrib <- scData_hESC %>%
     calculate_cvs %>%
     define_top_genes(window_size = 100) %>%
@@ -141,7 +148,7 @@ corDistrib <- scData_hESC %>%
 
 For visualization of the correlation values, probability distributions can be computed using 
 and plotted using the `correlations_to_densities` and `plot_correlations_distributions` functions:
-```{r collapse=TRUE}
+```{r, collapse=TRUE}
 corDens <- correlations_to_densities(corDistrib, absolute_cc = TRUE)
 plot_correlations_distributions(corDens, facet_ncol = 5)
 ```
@@ -152,8 +159,10 @@ lines with grey area (barely visible) represents the correlation coefficient dis
 each bin compared to the randomized control bins.
 
 
-Notice how the correlation distributions shift from high to low values as the bin number increases,
-i.e. as the  mean expression level of the features decreases, indicating a higher influence of 
+Notice that the correlation distributions shift from high to low values as
+the bin number increases,
+i.e. as the  mean expression level of the features decreases, 
+indicating a higher influence of 
 technical variability in the expression results.
 
 *Note: the `absolute_cc = TRUE` option, which is the default, instructs the package to work
@@ -205,23 +214,23 @@ binned_data <- scData_hESC %>%
     calculate_cvs %>%
     define_top_genes(window_size = 100) %>%
     bin_scdata(window_size = 1000)
-metrics <- correlate_windows(bined_data, n_random = 3) %>%
+metrics <- correlate_windows(binned_data, n_random = 3) %>%
     get_mean_median
 
 filtered_data <- filter_expression_table(
-    bined_data,
+    binned_data,
     bin_cutoff = determine_bin_cutoff(metrics)
 )
 
 dim(scData_hESC)
 dim(filtered_data)
 filtered_data
-
 ```
 
-*Note: most of the features are filtered at the `calculate_cvs` step because their fraction of zero expression 
-(i.e. the number of cells in which they present a 0 expression value) is prohitively high for CV calculation.
-The maximum fraction of 0 expression tolerated by scFeatureFilter is 75%, by default.*
+*Note: most of the features are filtered at the `calculate_cvs` step because
+hey have a too high fraction of drop-outs or zero-expression.
+The maximum fraction of 0 expression tolerated by scFeatureFilter is 75%,
+by default.*
 
 ## Working with SingleCellExperiment objects
 
@@ -246,16 +255,17 @@ sce_filtered_allen
 
 # Parameter values
 Several parameters are used in `sc_feature_filter` or in step-by-step functions.
-Their default values should be fine for eukaryote species with multi-exonic
+Their default values are set using mouse an human data and
+should work for eukaryote species with multi-exonic
 genes (metazoans & plants).
 
 ## `max_zeros`
-The `max_zeros` parameter default value `0.75`) is used as a first filter.
-Features with more than this proportion of cells with 0 expression will be
-removed. 0 expression can reflect both an absence of expression in the cell
+The `max_zeros` parameter (default value `0.75`) is used as a first filter.
+Features with more than this proportion of cells with zero expression will be
+removed. Zero expression can reflect both an absence of expression in the cell
 of origin, or a drop-out event during the library preparation. This technical
 drop out can be quite high in scRNAseq protocols. More stringent values for
-this parameter could be `0.5` or `0.25`. As features with many 0-expression
+this parameter could be `0.5` or `0.25`. As features with many zero-expression
 events are usually lowly expressed in other cells, this parameter will 
 mostly impact the number of bins in the rest of the method,
 adding or removing lowly expressed bins of features.
@@ -263,7 +273,7 @@ adding or removing lowly expressed bins of features.
 
 ## `top_window_size`
 The `top_window_size` parameter (default to `100`) can have significant impacts
-on the rest of the pipeline. It is the number of feature with the highest mean
+on the rest of the pipeline. It sets the number of feature with the highest mean
 expression that will be used as a reference bin. If the reference window is too
 small (i.e. `10`), it will not capture enough of the biological variation.
 On the contrary, a too large window (i.e. `2000`) might include to many features
@@ -304,18 +314,19 @@ plot_grid(
     plot_metric(metrics_smallBins) +
         labs(title = "500 genes per bin")
 )
-
 ```
 
 ## `n_random`
-The background correlation values used to determine a threshold come from
+The background correlation values used to determine a threshold are 
+calculated by
 shuffling of the values in the top bin expression matrices. `n_random`
-(default to 3) is the control bins that will be generated. Result difference
-between the different random windows are small, there is not much need to
-increase that value. Increasing it a lot will increase computation time.
+(default to 3) sets the number of control bins that will be generated. 
+Results differ only marginally between the different random windows,
+there is not much need to
+increase that value. Increasing it will increase the computation time.
 
 ## `threshold`
-One can decide which bin of features one want to keep looking at the
+One can decide which bin of features one want to keep by looking at the
 `plot_metric` or `plot_correlations_distributions` plots.
 We also provide an automatic threshold decision, keeping only windows of
 feature with a mean correlation value with the top window higher than 

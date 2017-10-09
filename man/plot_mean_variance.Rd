@@ -17,7 +17,7 @@ plot_mean_variance(df, density = TRUE, colourByBin = TRUE,
 
 \item{density_color}{Colour of the density2d curves.}
 
-\item{...}{Further arguments are passed to \code{geom_point}.}
+\item{...}{Further arguments are passed to \code{geom_point} such as \code{size}.}
 }
 \value{
 A ggplot2 plot.
