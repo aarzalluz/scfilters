@@ -2,7 +2,7 @@ Package: scFeatureFilter
 Type: Package
 Title: A correlation-based method for quality filtering of single-cell RNAseq
     data
-Version: 0.5.3
+Version: 0.99.0
 Authors@R: c(
 	person("Angeles", "Arzalluz-Luque", email = "angeles.arzalluz@gmail.com", role = c("aut")),
 	person("Guillaume", "Devailly", email = "gdevailly@hotmail.com", role = c("aut", "cre")),

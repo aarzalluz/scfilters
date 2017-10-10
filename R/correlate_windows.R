@@ -71,7 +71,7 @@ correlate_windows <- function(dataset, n_random = 3, ...){
                 with_top_window <- tibble::tibble(
                     bin = i,
                     window = "top_window",
-                    cor_coef = .correlate_window(top_window, selected_window)
+                    cor_coef = .correlate_window(top_window, selected_window, ...)
                 )
 
                 with_controls <- dplyr::bind_rows(
@@ -81,7 +81,7 @@ correlate_windows <- function(dataset, n_random = 3, ...){
                             tibble::tibble(
                                 bin = i,
                                 window = paste0("shuffled_top_window_", j),
-                                cor_coef = .correlate_window(shuffled_top_windows[[j]], selected_window)
+                                cor_coef = .correlate_window(shuffled_top_windows[[j]], selected_window, ...)
                             )
                         }
                     )
