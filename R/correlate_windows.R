@@ -2,21 +2,25 @@
 .correlate_window <- function(topMatrix, bottomMatrix, ...) {
     correlations <- list()
     for(j in seq_len(nrow(topMatrix))){
-        correlations[[j]] <- cor(topMatrix[j,], t(bottomMatrix), ...) %>% as.vector
+        correlations[[j]] <- cor(topMatrix[j,], t(bottomMatrix), ...) %>%
+            as.vector
     }
     return(do.call(c, correlations))
 }
 
 #' Calculate correlations against top window.
 #'
-#' Calculates correlations of each genes in each window against each genes in the top window.
+#' Calculates pairwise correlations between all features each window against
+#' all features in the reference window.
 #'
 #' This function:
 #' \itemize{
-#'      \item correlates each gene in each window to each gene in the top window.
+#'      \item correlates each feature in each window to each feature in the
+#'       top window.
 #'
-#'      \item randomize the top window by shuffling expression value, and correlate each gene in each
-#'      window to the randomized top window. This negative control is repeated as many time as specified by
+#'      \item randomize the top window by shuffling expression value, and
+#'       correlate each gene in each window to the randomized top window.
+#'       This negative control is repeated as many time as specified by
 #'      the \code{n_random} parameter.
 #' }
 #' The input of this function is usually the output of the \code{\link{bin_scdata}} function.
@@ -71,7 +75,11 @@ correlate_windows <- function(dataset, n_random = 3, ...){
                 with_top_window <- tibble::tibble(
                     bin = i,
                     window = "top_window",
-                    cor_coef = .correlate_window(top_window, selected_window, ...)
+                    cor_coef = .correlate_window(
+                        top_window,
+                        selected_window,
+                        ...
+                    )
                 )
 
                 with_controls <- dplyr::bind_rows(
@@ -81,7 +89,11 @@ correlate_windows <- function(dataset, n_random = 3, ...){
                             tibble::tibble(
                                 bin = i,
                                 window = paste0("shuffled_top_window_", j),
-                                cor_coef = .correlate_window(shuffled_top_windows[[j]], selected_window, ...)
+                                cor_coef = .correlate_window(
+                                    shuffled_top_windows[[j]],
+                                    selected_window,
+                                    ...
+                                )
                             )
                         }
                     )

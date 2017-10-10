@@ -16,7 +16,7 @@ mean or median of the correlation coefficient distributions.}
 \item{vlines}{A string, either "mean" or "median". Should the dashed line represent the mean or the median
 of the correlation coefficient distributions? Ignored if \code{metrics} is \code{NULL}.}
 
-\item{facet_ncol}{In how many columns should the plots be arranged.}
+\item{facet_ncol}{The number of columns to arrange the plots.}
 }
 \value{
 A ggplot2 plot.

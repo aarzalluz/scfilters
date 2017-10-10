@@ -2,7 +2,8 @@
 % Please edit documentation in R/calculate_cvs.R
 \name{calculate_cvs}
 \alias{calculate_cvs}
-\title{Compute mean expression levels, standard deviations and coefficients of variation of each feature.}
+\title{Compute mean expression level, standard deviation and coefficient of
+variation of each feature.}
 \usage{
 calculate_cvs(data, max_zeros = 0.75, sce_assay = NULL)
 }
@@ -22,7 +23,8 @@ A data frame, containing the filtered data with additional columns: mean, standa
 values for each row.
 }
 \description{
-Compute mean expression levels, standard deviations and coefficients of variation (CV)
+Compute mean expression level, standard deviation and
+coefficient of variation (CV)
 of each feature (i.e. gene or transcript) in the supplied data.
 Filter features with high proportion of 0 expression.
 }
@@ -32,8 +34,8 @@ removes all rows that have a proportion of zeros above the specified
 threshold. Genes with many 0s are poorly informative, and would bias the later correlations.
 Removing them also prevents division by zero when calculating CVs.
 
-The data provided must cell/sample names as column names. Feature name can be given either in the
-first column or as rownames.
+The data provided must cell/sample names as column names. Feature name can be
+ given either in the first column or as row names.
 
 In the output, mean, standard deviation and CV are incorporated as new columns in the data
 frame, named \code{mean}, \code{sd} and \code{cv}.

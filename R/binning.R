@@ -1,33 +1,33 @@
-#' Define the top highly expressed gene window.
+#' Define the reference window using the most highly expressed features.
 #'
-#' Define the group of genes in the dataset that will be considered as reference,
-#' the top window, by specifying either a number of genes or an expression threshold.
+#' Define the group of features in the dataset that will be considered as reference,
+#' the top window, by specifying either a number of features or an expression threshold.
 #'
 #' There are three selection methods available:
 #'
 #' \itemize{
 #'
-#'      \item \code{window_size}: genes are ranked by mean expression across cells, and the top slice
+#'      \item \code{window_size}: features are ranked by mean expression across cells, and the top slice
 #'      of the specified size is selected.
 #'
-#'      \item \code{mean_expression}: the \code{mean} column is checked, and all genes with mean
+#'      \item \code{mean_expression}: the \code{mean} column is checked, and all features with mean
 #'      expression above the threshold indicated are selected.
 #'
-#'      \item \code{min_expression}: genes where all expression values are above the
+#'      \item \code{min_expression}: features where all expression values are above the
 #'      expression threshold indicated are selected.
 #'
 #' }
 #'
-#' In general, it is advisable to avoid generating top windows larger than 250 genes
-#' (100 genes is the recommended value),
+#' In general, it is advisable to avoid generating top windows larger than 250 features
+#' (100 features is the recommended value),
 #' to prevent excessively long computation time as well as to preserve the quality of the
 #' analysis, as the top window should only include a subset of reliable values.
 #'
-#' @param dataset A data frame, containing genes as rows and cells as columns, and where
+#' @param dataset A data frame, containing features as rows and cells as columns, and where
 #' the mean expression value for each gene has been added as a column. Usually the output of
 #' \code{calculate_cvs}.
 #'
-#' @param window_size Number of genes in the defined top window. Recommended to 100 genes.
+#' @param window_size Number of features in the defined top window. Recommended to 100 features.
 #'
 #' @param mean_expression A number. Genes with a mean expression across cells higher than the value
 #' will be selected. Ignored if \code{window_size} is defined.

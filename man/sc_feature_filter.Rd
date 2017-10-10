@@ -38,9 +38,11 @@ A \code{matrix} or a \code{tibble}, depending on the type of \code{sc_data},
 containing only the top expressed features.
 }
 \description{
-This pipeline function takes an expression matrix as an input and filter it to
-keep only the most highly expressed features, with a threshold estimated through
-correlations with a reference bin constituted of the very most expressed features
+This pipeline function takes an expression matrix as an input and
+select the features (genes, transcripts) with an estimated technical noise
+level lower that biological variation in the data.
+This is achieved by binning the data and calculating the correlation
+for each bin with highly expressed (lowest noise) gene set
 (see the vignette for details on the method).
 }
 \details{

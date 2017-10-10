@@ -1,7 +1,7 @@
 # scFeatureFilter
 by Angeles Arzalluz-Luque, Guillaume Devailly, Anna Mantsoki, Anagha Joshi
 
-![scFeatureFilter outputs](inst/figure1_small.png)
+![scFeatureFilter outputs](figure1_small.png)
 
 
 An R package to set thresholds for feature (gene, transcript, ...) selection in single cell RNA sequencing analyses.

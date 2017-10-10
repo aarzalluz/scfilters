@@ -1,8 +1,10 @@
 #' Filter scRNA-seq expression matrix to keep only highly informative features. Integrated pipeline.
 #'
-#' This pipeline function takes an expression matrix as an input and filter it to
-#' keep only the most highly expressed features, with a threshold estimated through
-#' correlations with a reference bin constituted of the very most expressed features
+#' This pipeline function takes an expression matrix as an input and
+#' select the features (genes, transcripts) with an estimated technical noise
+#' level lower that biological variation in the data.
+#' This is achieved by binning the data and calculating the correlation
+#' for each bin with highly expressed (lowest noise) gene set
 #' (see the vignette for details on the method).
 #'
 #' The function can optionally produce three plots of \code{print_plots} is \code{TRUE}.

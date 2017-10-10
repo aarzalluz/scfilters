@@ -11,15 +11,16 @@ correlations_to_densities(df, n = 64, absolute_cc = TRUE)
 
 \item{n}{Resolution of the correlation density curve. Default to 64.}
 
-\item{absolute_cc}{Should the function work of absolute value of correlation coefficients?
-Default to \code{TRUE} to simplify plots and avoid annoying, non-symmetrical, near 0, shifts of distributions.}
+\item{absolute_cc}{Should the function use the absolute value of correlation coefficients?
+Default to \code{TRUE} to simplify plots and avoid annoying, non-symmetrical,
+near 0, shifts of distributions.}
 }
 \value{
 A \code{\link{tibble}} with columns \code{bin}, \code{window}, \code{cor_coef} and \code{density}.
 }
 \description{
-Takes the output of \code{\link{correlate_windows}} and compute density curves of correlation coefficient
-for each window comparison.
+Takes the output of \code{\link{correlate_windows}} and computes density
+curves of correlation coefficient for each window comparison.
 }
 \examples{
 library(magrittr)

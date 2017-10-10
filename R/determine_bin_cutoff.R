@@ -1,14 +1,18 @@
 # suppress CHECK annoying handling of NSE
-utils::globalVariables(c("window", "metric", "med", "top_window", "ctrl_window_median"))
-#' Determine until when bin of features should be kept based on the metric table
+utils::globalVariables(
+    c("window", "metric", "med", "top_window", "ctrl_window_median")
+)
+#' Determine a threshold for selecting bins of features
+#' based on the metric table
 #'
 #' Takes the output of \code{\link{get_mean_median}} and decide until which window to keep
 #' based on background level and a threshold.
 #'
 #' Background level is estimated by averaging correlation coefficient obtained
-#' from top window randomisation.
+#' from the top window randomisations.
 #'
-#' Bins of genes are kept until there mean (or median) correlation coefficient fell under
+#' Bins (or windows) of features are kept until the mean (or median)
+#' correlation coefficient falls under
 #' a threshold value \code{threshold x background level}.
 #'
 #' @param metric_table A data frame, usually the output of \code{\link{get_mean_median}}.
@@ -18,7 +22,8 @@ utils::globalVariables(c("window", "metric", "med", "top_window", "ctrl_window_m
 #' @param selected_metric Which metric to use (i.e. which column from metric_table to work with).
 #'  Default to \code{mean}.
 #'
-#' @param random_function_summarisation A function used to aggregate the randomised control across
+#' @param random_function_summarisation A function used to aggregate the
+#'  randomised control across
 #'  bin. Default to \code{mean}.
 #'
 #' @return A number, the first bin of features to discard.

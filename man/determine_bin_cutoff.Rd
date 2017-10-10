@@ -2,7 +2,8 @@
 % Please edit documentation in R/determine_bin_cutoff.R
 \name{determine_bin_cutoff}
 \alias{determine_bin_cutoff}
-\title{Determine until when bin of features should be kept based on the metric table}
+\title{Determine a threshold for selecting bins of features
+based on the metric table}
 \usage{
 determine_bin_cutoff(metric_table, threshold = 2,
   selected_metric = c("mean", "median", "score"),
@@ -16,7 +17,8 @@ determine_bin_cutoff(metric_table, threshold = 2,
 \item{selected_metric}{Which metric to use (i.e. which column from metric_table to work with).
 Default to \code{mean}.}
 
-\item{random_function_summarisation}{A function used to aggregate the randomised control across
+\item{random_function_summarisation}{A function used to aggregate the
+randomised control across
 bin. Default to \code{mean}.}
 }
 \value{
@@ -28,9 +30,10 @@ based on background level and a threshold.
 }
 \details{
 Background level is estimated by averaging correlation coefficient obtained
-from top window randomisation.
+from the top window randomisations.
 
-Bins of genes are kept until there mean (or median) correlation coefficient fell under
+Bins (or windows) of features are kept until the mean (or median)
+correlation coefficient falls under
 a threshold value \code{threshold x background level}.
 }
 \examples{

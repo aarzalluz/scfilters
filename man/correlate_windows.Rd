@@ -18,15 +18,18 @@ which is the fastest.}
 A \code{tibble} containing correlation values.
 }
 \description{
-Calculates correlations of each genes in each window against each genes in the top window.
+Calculates pairwise correlations between all features each window against
+all features in the reference window.
 }
 \details{
 This function:
 \itemize{
-     \item correlates each gene in each window to each gene in the top window.
+     \item correlates each feature in each window to each feature in the
+      top window.
 
-\item randomize the top window by shuffling expression value, and correlate each gene in each
-     window to the randomized top window. This negative control is repeated as many time as specified by
+\item randomize the top window by shuffling expression value, and
+      correlate each gene in each window to the randomized top window.
+      This negative control is repeated as many time as specified by
      the \code{n_random} parameter.
 }
 The input of this function is usually the output of the \code{\link{bin_scdata}} function.

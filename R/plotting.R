@@ -80,7 +80,7 @@ plot_mean_variance <- function(df, density = TRUE, colourByBin = TRUE, density_c
 #' @param vlines A string, either "mean" or "median". Should the dashed line represent the mean or the median
 #' of the correlation coefficient distributions? Ignored if \code{metrics} is \code{NULL}.
 #'
-#' @param facet_ncol In how many columns should the plots be arranged.
+#' @param facet_ncol The number of columns to arrange the plots.
 #'
 #' @return A ggplot2 plot.
 #'

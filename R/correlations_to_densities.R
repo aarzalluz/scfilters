@@ -15,15 +15,16 @@
 utils::globalVariables(c("window", "."))
 #' Transform the correlation table to density distributions of correlation values
 #'
-#' Takes the output of \code{\link{correlate_windows}} and compute density curves of correlation coefficient
-#' for each window comparison.
+#' Takes the output of \code{\link{correlate_windows}} and computes density
+#' curves of correlation coefficient for each window comparison.
 #'
 #' @param df A data frame, usually the output of \code{\link{correlate_windows}}.
 #'
 #' @param n Resolution of the correlation density curve. Default to 64.
 #'
-#' @param absolute_cc Should the function work of absolute value of correlation coefficients?
-#' Default to \code{TRUE} to simplify plots and avoid annoying, non-symmetrical, near 0, shifts of distributions.
+#' @param absolute_cc Should the function use the absolute value of correlation coefficients?
+#' Default to \code{TRUE} to simplify plots and avoid annoying, non-symmetrical,
+#' near 0, shifts of distributions.
 #'
 #' @return A \code{\link{tibble}} with columns \code{bin}, \code{window}, \code{cor_coef} and \code{density}.
 #'
